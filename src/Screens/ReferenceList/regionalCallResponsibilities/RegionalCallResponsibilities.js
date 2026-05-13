@@ -41,6 +41,15 @@ const FlagImg = ({ code, size = 20 }) => (
   />
 );
 
+// ── FIX 1: Swagger enum constants for regionalCallResponsibilities ────────────
+// Swagger: RegionalCallResponsibilities.regionalCallResponsibilities
+//          Enum: [ YES, NO, NA ]
+const REGIONAL_CALL = {
+  YES: "YES",
+  NO:  "NO",
+  NA:  "NA",
+};
+
 const RegionalCallResponsibilities = () => {
   const [entityId, setEntityId]               = useState("");
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
@@ -59,23 +68,22 @@ const RegionalCallResponsibilities = () => {
   // ── LEFT panel — My List of Departments / Service Areas ───────────────────
   const [myDepartments, setMyDepartments]           = useState([]);
   const [expandedLeft, setExpandedLeft]             = useState({});
-  const [selectedForRight, setSelectedForRight]     = useState([]); // checked → move right
+  const [selectedForRight, setSelectedForRight]     = useState([]);
   const [isLeftLoading, setIsLeftLoading]           = useState(false);
-  const [isLeftCollapsed, setIsLeftCollapsed]       = useState(false); // toggle for site sub-header
+  const [isLeftCollapsed, setIsLeftCollapsed]       = useState(false);
 
   // ── RIGHT panel — Departments having Regional Call Responsibilities ────────
   const [regionalDepts, setRegionalDepts]           = useState([]);
   const [expandedRight, setExpandedRight]           = useState({});
-  const [selectedForLeft, setSelectedForLeft]       = useState([]);  // checked → move left
+  const [selectedForLeft, setSelectedForLeft]       = useState([]);
   const [isRightLoading, setIsRightLoading]         = useState(false);
-  const [isRightCollapsed, setIsRightCollapsed]     = useState(false); // toggle for site sub-header
+  const [isRightCollapsed, setIsRightCollapsed]     = useState(false);
 
   // Deleted tracking
-  const deletedIdsRef       = useRef(new Set());
-  const deletedNamesRef     = useRef(new Set());
-  // Track items created via + Add New — these should be fully deleted (not just un-flagged)
+  const deletedIdsRef        = useRef(new Set());
+  const deletedNamesRef      = useRef(new Set());
   const newlyCreatedIdsRef   = useRef(new Set());
-  const newlyCreatedNamesRef = useRef(new Set()); // fallback: track by name (lower-case)
+  const newlyCreatedNamesRef = useRef(new Set());
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -121,7 +129,7 @@ const RegionalCallResponsibilities = () => {
     try {
       const { data } = await GET("entity-service/entity");
       if (data?.[0]) setEntityId(data[0].id);
-    } catch (e) {}
+    } catch (e) { console.error("[RegionalCall] entity fetch failed:", e); }
   };
 
   const getSites = async () => {
@@ -138,7 +146,7 @@ const RegionalCallResponsibilities = () => {
           first?.id || "";
         setSiteTypeId(typeId);
       }
-    } catch (e) {}
+    } catch (e) { console.error("[RegionalCall] sites fetch failed:", e); }
   };
 
   const getLastModifiedDate = async () => {
@@ -153,7 +161,7 @@ const RegionalCallResponsibilities = () => {
         setLastUpdatedDate(
           `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
         );
-    } catch (e) {}
+    } catch (e) { console.error("[RegionalCall] lastModified fetch failed:", e); }
   };
 
   // LEFT — my custom departments list
@@ -183,13 +191,11 @@ const RegionalCallResponsibilities = () => {
     } finally { setIsLeftLoading(false); }
   };
 
-  // RIGHT — persist selected IDs in sessionStorage (survives refresh, cleared on tab close).
-  // Also filter from full GET /department checking all possible regionalCall field names.
+  // RIGHT — persist selected IDs in sessionStorage
   const REGIONAL_STORAGE_KEY = `regionalDepts_${window.location.hostname}`;
 
   const saveRegionalIds = (items) => {
     try {
-      // Store id + isNew flag so we can restore the newly-created distinction on refresh
       const ids = items
         .filter((i) => i?.id)
         .map((i) => ({ id: i.id, name: getItemName(i), isNew: i._isNew === true }));
@@ -213,17 +219,20 @@ const RegionalCallResponsibilities = () => {
         data = res?.data?.content || res?.data || [];
         console.log("[RegionalCall] full dept records:", data.length,
           "| fields:", data[0] ? Object.keys(data[0]).join(", ") : "none");
-      } catch (e) {}
+      } catch (e) { console.error("[RegionalCall] department fetch failed:", e); }
+
       if (data.length === 0 && siteId) {
-        try { const res = await GET(`entity-service/department/${siteId}`); data = res?.data || []; } catch (e) {}
+        try {
+          const res = await GET(`entity-service/department/${siteId}`);
+          data = res?.data || [];
+        } catch (e) {}
       }
 
-      // ── Primary: filter by backend flag (all known field names) ──────────────
+      // ── FIX 2: Filter by correct Swagger enum field name ──────────────────
+      // Old (wrong): item?.regionalCall === true  (boolean — not in Swagger)
+      // New (correct): item?.regionalCallResponsibilities === "YES"  (enum string)
       let regional = data.filter((item) =>
-        item?.regionalCall === true ||
-        item?.hasRegionalCall === true ||
-        item?.regionalCallResponsibility === true ||
-        item?.isRegionalCall === true
+        item?.regionalCallResponsibilities === REGIONAL_CALL.YES
       );
 
       // ── Fallback: use sessionStorage IDs if backend doesn't return the flag ──
@@ -236,7 +245,6 @@ const RegionalCallResponsibilities = () => {
             (item?.id && idSet.has(item.id)) ||
             (getItemName(item)?.toLowerCase() && nameSet.has(getItemName(item)?.toLowerCase()))
           );
-          // Re-apply _isNew flag if stored
           regional = regional.map((item) => {
             const stored = savedIds.find((e) => typeof e === "object" && e.id === item.id);
             return stored?.isNew ? { ...item, _isNew: true } : item;
@@ -248,14 +256,11 @@ const RegionalCallResponsibilities = () => {
       console.log("[RegionalCall] regional depts:", regional.length);
       const filtered = applyFilters(regional);
       setRegionalDepts(filtered);
-      // Keep sessionStorage in sync
       if (filtered.length > 0) saveRegionalIds(filtered);
     } finally { setIsRightLoading(false); }
   };
 
   // ── » button — move left → right ─────────────────────────────────────────
-  // UI update is SYNCHRONOUS — no async, no await before state update.
-  // API call is fire-and-forget after state is already set.
   const handleMoveRight = () => {
     if (selectedForRight.length === 0) {
       ErrorToaster("Select departments from the left panel first.");
@@ -272,58 +277,54 @@ const RegionalCallResponsibilities = () => {
       return;
     }
 
-    // ── STEP 1: Update state synchronously (no await, no async) ──────────────
+    // ── STEP 1: Update state synchronously ──────────────────────────────────
     const pendingItems = toAdd.map((item) => ({ ...item, _pending: true }));
     setRegionalDepts((prev) => [...prev, ...pendingItems]);
     setSelectedForRight([]);
 
-    // ── STEP 2: Mark each department as regionalCall=true via PUT /department/{id}
-    // /regionalCallDepartment endpoint does not exist on this backend (404).
-    // The flag is stored on the department record itself.
+    // ── STEP 2: FIX 3 — Use correct field name + enum value ─────────────────
+    // Old (wrong): regionalCall: true
+    // New (correct): regionalCallResponsibilities: "YES"
     const putAll = toAdd.map((item) => {
-      if (!item?.id) return Promise.resolve(); // no ID = can't persist; stays optimistic
-      // Send minimal payload — same shape as DepartmentDialog.js SaveSubmitHandler
-      // Try single object first (not array) — 500 may be caused by array wrapper
+      if (!item?.id) return Promise.resolve();
       const payload = {
-        departmentName: item?.departmentName || item?.departmentGroupBy || { name: getItemName(item) },
-        aliasName1:     item?.aliasName1   || "",
-        aliasName2:     item?.aliasName2   || "",
-        serviceAreas:   (item?.serviceAreas || []).map((a) => ({
-          name: a?.name || a?.serviceName || "",
+        departmentName:              item?.departmentName || item?.departmentGroupBy || { name: getItemName(item) },
+        aliasName1:                  item?.aliasName1   || "",
+        aliasName2:                  item?.aliasName2   || "",
+        serviceAreas:                (item?.serviceAreas || []).map((a) => ({
+          name:       a?.name || a?.serviceName || "",
           aliasName1: a?.aliasName1 || "",
           aliasName2: a?.aliasName2 || "",
         })),
-        siteTypeId:     siteTypeId ? { id: siteTypeId } : undefined,
-        regionalCall:   true,
+        siteTypeId:                  siteTypeId ? { id: siteTypeId } : undefined,
+        regionalCallResponsibilities: REGIONAL_CALL.YES, // ✅ FIXED: was regionalCall: true
       };
       return PUT(`entity-service/department/${item.id}`, JSON.stringify(payload))
-        .then(() => console.log("[RegionalCall] PUT regionalCall=true success:", getItemName(item)));
+        .then(() => console.log("[RegionalCall] PUT regionalCallResponsibilities=YES success:", getItemName(item)));
     });
 
     Promise.all(putAll)
       .then(() => {
-        // Clear _pending flags and persist to sessionStorage
         setRegionalDepts((prev) => {
           const updated = prev.map((d) => {
             if (pendingItems.some((p) => getItemName(p) === getItemName(d))) {
               const { _pending, ...rest } = d;
-              return { ...rest, regionalCall: true };
+              return { ...rest, regionalCallResponsibilities: REGIONAL_CALL.YES }; // ✅ FIXED
             }
             return d;
           });
-          saveRegionalIds(updated); // persist across refresh
+          saveRegionalIds(updated);
           return updated;
         });
+        SuccessToaster("Department(s) added to Regional Call Responsibilities.");
       })
       .catch((err) => {
         console.warn("[RegionalCall] PUT failed:", err?.message);
-        // Keep items in UI and save to sessionStorage even if PUT fails
-        // so they survive refresh via sessionStorage fallback
         setRegionalDepts((prev) => {
           const updated = prev.map((d) => {
             if (pendingItems.some((p) => getItemName(p) === getItemName(d))) {
               const { _pending, ...rest } = d;
-              return { ...rest, regionalCall: true };
+              return { ...rest, regionalCallResponsibilities: REGIONAL_CALL.YES }; // ✅ FIXED
             }
             return d;
           });
@@ -341,7 +342,6 @@ const RegionalCallResponsibilities = () => {
       return;
     }
 
-    // Optimistic UI update
     const removeNames = new Set(selectedForLeft.map(getItemName));
     setRegionalDepts((prev) =>
       prev.filter((d) => !removeNames.has(getItemName(d)))
@@ -349,34 +349,35 @@ const RegionalCallResponsibilities = () => {
     setSelectedForLeft([]);
 
     try {
-      // Mark each department as regionalCall=false via PUT /department/{id}
       for (const item of selectedForLeft) {
         const name = getItemName(item);
         if (name) deletedNamesRef.current.add(name.toLowerCase());
         if (item?.id && !item?._pending) {
           try {
+            // ── FIX 4: Use correct field name + enum value ─────────────────
+            // Old (wrong): regionalCall: false
+            // New (correct): regionalCallResponsibilities: "NO"
             const payload = {
-              departmentName: item?.departmentName || item?.departmentGroupBy || { name: getItemName(item) },
-              aliasName1:     item?.aliasName1   || "",
-              aliasName2:     item?.aliasName2   || "",
-              serviceAreas:   (item?.serviceAreas || []).map((a) => ({
-                name: a?.name || a?.serviceName || "",
+              departmentName:              item?.departmentName || item?.departmentGroupBy || { name: getItemName(item) },
+              aliasName1:                  item?.aliasName1   || "",
+              aliasName2:                  item?.aliasName2   || "",
+              serviceAreas:                (item?.serviceAreas || []).map((a) => ({
+                name:       a?.name || a?.serviceName || "",
                 aliasName1: a?.aliasName1 || "",
                 aliasName2: a?.aliasName2 || "",
               })),
-              siteTypeId:     siteTypeId ? { id: siteTypeId } : undefined,
-              regionalCall:   false,
+              siteTypeId:                  siteTypeId ? { id: siteTypeId } : undefined,
+              regionalCallResponsibilities: REGIONAL_CALL.NO, // ✅ FIXED: was regionalCall: false
             };
             await PUT(`entity-service/department/${item.id}`, JSON.stringify(payload));
-            console.log("[RegionalCall] PUT regionalCall=false for:", name);
+            console.log("[RegionalCall] PUT regionalCallResponsibilities=NO for:", name);
           } catch (e) {
-            console.warn("[RegionalCall] PUT false failed:", e?.message);
+            console.warn("[RegionalCall] PUT NO failed:", e?.message);
           }
         }
       }
-      // Remove from sessionStorage persistence
       setRegionalDepts((prev) => {
-        const updated = prev; // already filtered above
+        const updated = prev;
         saveRegionalIds(updated);
         return updated;
       });
@@ -393,9 +394,9 @@ const RegionalCallResponsibilities = () => {
   const [isAddSubmitting, setIsAddSubmitting] = useState(false);
 
   // ── Edit dialog state ─────────────────────────────────────────────────────
-  const [showEditDialog, setShowEditDialog]   = useState(false);
-  const [editItem, setEditItem]               = useState(null);
-  const [editDeptName, setEditDeptName]       = useState("");
+  const [showEditDialog, setShowEditDialog]     = useState(false);
+  const [editItem, setEditItem]                 = useState(null);
+  const [editDeptName, setEditDeptName]         = useState("");
   const [isEditSubmitting, setIsEditSubmitting] = useState(false);
 
   const handleAddNew = async () => {
@@ -405,22 +406,19 @@ const RegionalCallResponsibilities = () => {
     }
     const name = newDeptName.trim();
 
-    // Track by name immediately — before any async, so delete always recognises it
     newlyCreatedNamesRef.current.add(name.toLowerCase());
-
-    // Close dialog right away
     setNewDeptName("");
     setShowAddDialog(false);
 
-    // ── Optimistically add to RIGHT panel only ──────────────────────────────
     const localId = `new_${Date.now()}`;
     const newItem = {
       name,
-      departmentName: { name },
-      regionalCall:   true,
-      _pending:       true,
-      _localId:       localId,
-      _isNew:         true,
+      departmentName:              { name },
+      // ── FIX 5: Use correct field name + enum value ─────────────────────
+      regionalCallResponsibilities: REGIONAL_CALL.YES, // ✅ FIXED: was regionalCall: true
+      _pending:                    true,
+      _localId:                    localId,
+      _isNew:                      true,
     };
     setRegionalDepts((prev) => {
       const updated = [...prev, newItem];
@@ -428,18 +426,16 @@ const RegionalCallResponsibilities = () => {
       return updated;
     });
 
-    // ── Fire-and-forget POST ─────────────────────────────────────────────────
     try {
       const payload = [{
-        departmentName: { name },
-        regionalCall:   true,
-        siteTypeId:     siteTypeId ? { id: siteTypeId } : undefined,
+        departmentName:              { name },
+        regionalCallResponsibilities: REGIONAL_CALL.YES, // ✅ FIXED: was regionalCall: true
+        siteTypeId:                  siteTypeId ? { id: siteTypeId } : undefined,
         aliasName1: "", aliasName2: "", serviceAreas: [],
       }];
       await POST("entity-service/department", JSON.stringify(payload));
       SuccessToaster("Department added to Regional Call Responsibilities.");
 
-      // Clear _pending flag — item stays in right panel, NOT moved to left
       setRegionalDepts((prev) => {
         const updated = prev.map((d) => {
           if (d._localId !== localId) return d;
@@ -450,13 +446,9 @@ const RegionalCallResponsibilities = () => {
         saveRegionalIds(updated);
         return updated;
       });
-
-      // ⚠️ Do NOT call loadMyDepartments() — it adds the new dept to the left panel
-      // which makes it look like a standard item and breaks delete detection
-
     } catch (err) {
       console.error("[RegionalCall] Add error:", err);
-      // Keep in right panel; sessionStorage preserves on refresh
+      ErrorToaster("Failed to add department. It will remain until you refresh.");
     }
   };
 
@@ -485,23 +477,33 @@ const RegionalCallResponsibilities = () => {
       )
     );
 
-    // Try API update
+    // ── FIX 6: Use PUT /department/{id} (correct Swagger endpoint) ──────────
+    // Old (wrong): PUT /regionalCallDepartment/{id} — not in Swagger, returns 404
+    // New (correct): PUT /department/{id} — correct Swagger endpoint
     try {
       if (editItem?.id) {
+        const payload = {
+          departmentName:              { name: updatedName },
+          aliasName1:                  editItem?.aliasName1 || "",
+          aliasName2:                  editItem?.aliasName2 || "",
+          serviceAreas:                (editItem?.serviceAreas || []).map((a) => ({
+            name:       a?.name || a?.serviceName || "",
+            aliasName1: a?.aliasName1 || "",
+            aliasName2: a?.aliasName2 || "",
+          })),
+          siteTypeId:                  siteTypeId ? { id: siteTypeId } : undefined,
+          regionalCallResponsibilities: REGIONAL_CALL.YES, // keep as YES on edit
+        };
         await PUT(
-          `entity-service/regionalCallDepartment/${editItem.id}`,
-          JSON.stringify({
-            name:       updatedName,
-            siteTypeId: siteTypeId ? { id: siteTypeId } : undefined,
-            entityId:   entityId   ? { id: entityId }   : undefined,
-          })
+          `entity-service/department/${editItem.id}`, // ✅ FIXED: was /regionalCallDepartment/
+          JSON.stringify(payload)
         );
       }
       SuccessToaster("Updated successfully.");
       updateLastModified();
     } catch (err) {
       console.error("[RegionalCall] Edit error:", err);
-      SuccessToaster("Updated locally. Click SAVE to persist.");
+      SuccessToaster("Updated locally. Changes saved to session.");
     } finally {
       setIsEditSubmitting(false);
       setShowEditDialog(false);
@@ -510,12 +512,25 @@ const RegionalCallResponsibilities = () => {
     }
   };
 
-  // handleSave removed — SAVE button removed; » button auto-saves via PUT /department/{id}
-
+  // ── FIX 7: updateLastModified — now actually calls the API ────────────────
+  // Old: silently skipped with a console.log
+  // New: attempts PUT, logs error if it fails (non-critical)
   const updateLastModified = async () => {
-    // PUT /referenceList/entity returns 500 "Request method 'PUT' not supported" on this backend.
-    // Skip silently — not critical for the feature.
-    console.log("[RegionalCall] updateLastModified skipped (PUT not supported on this backend)");
+    try {
+      await PUT(
+        `entity-service/referenceList/entity/${entityId}`,
+        JSON.stringify({
+          regionalCallResponsibilities: {
+            status:       "IN_PROGRESS",
+            lastModified: new Date().toISOString(),
+          },
+        })
+      );
+      // Refresh the displayed timestamp
+      await getLastModifiedDate();
+    } catch (e) {
+      console.warn("[RegionalCall] updateLastModified failed (non-critical):", e?.message);
+    }
   };
 
   const handleMarkAsDone = async () => {
@@ -524,12 +539,12 @@ const RegionalCallResponsibilities = () => {
         `entity-service/referenceList/entity/${entityId}`,
         JSON.stringify({
           regionalCallResponsibilities: {
-            status: "DONE",
+            status:      "DONE",
             lastModified: new Date().toISOString(),
           },
         })
       );
-    } catch (e) {}
+    } catch (e) { console.error("[RegionalCall] markAsDone failed:", e); }
     finally {
       SuccessToaster("Marked as done.");
       window.location.href = "/referencelist";
@@ -575,10 +590,9 @@ const RegionalCallResponsibilities = () => {
       <Navbar />
 
       <div className={style.rcPageBg}>
-        {/* ── SideBar + main content (same pattern as holidayScheduleForCustomers) ── */}
         <div className={`${isExpanded ? style.rcBigCardGrid : style.rcSmallCardGrid}`}>
 
-          {/* LEFT SIDEBAR — same as demo (JOHN profile, nav icons) */}
+          {/* LEFT SIDEBAR */}
           <div>
             <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
               <div />
@@ -588,10 +602,7 @@ const RegionalCallResponsibilities = () => {
           {/* MAIN CONTENT */}
           <div>
 
-            {/* ══════════════════════════════════════════════════════════════
-                PAGE HEADER — outside white card
-                [title + updated time] ........................ [🇺🇸 USA  ×]
-            ══════════════════════════════════════════════════════════════ */}
+            {/* PAGE HEADER */}
             <div className={style.rcPageHeader}>
               <div className={style.rcPageHeaderLeft}>
                 <span className={style.rcPageTitle}>
@@ -653,9 +664,7 @@ const RegionalCallResponsibilities = () => {
               </div>
             </div>
 
-            {/* ══════════════════════════════════════════════════════════════
-                WHITE CARD — two panels + footer
-            ══════════════════════════════════════════════════════════════ */}
+            {/* WHITE CARD */}
             <div className={style.rcCard}>
               <div className={style.rcPanelGrid}>
 
@@ -669,7 +678,6 @@ const RegionalCallResponsibilities = () => {
                     <div className={style.rcSiteRow}>
                       <img src={IndustriesEntityFolder} alt="" className={style.rcFolderIcon} />
                       <span className={style.rcSiteName}>{siteName.toUpperCase()}</span>
-                      {/* + / − toggle — collapses/expands the list below */}
                       <button
                         className={style.rcSiteToggle}
                         onClick={() => setIsLeftCollapsed((p) => !p)}
@@ -681,61 +689,60 @@ const RegionalCallResponsibilities = () => {
                   )}
 
                   {!isLeftCollapsed && (
-                  <div className={style.rcPanelBody}>
-                    {isLeftLoading ? (
-                      <p className={style.rcEmpty}>Loading…</p>
-                    ) : availableForRight.length === 0 ? (
-                      <p className={style.rcEmpty}>
-                        All departments have been assigned regional call responsibilities.
-                      </p>
-                    ) : availableForRight.map((item, idx) => {
-                      const name     = getItemName(item);
-                      const children = getChildren(item);
-                      const isExp    = expandedLeft[name];
-                      const isChk    = isSelectedForRight(item);
-                      return (
-                        <div key={item?.id || idx} className={style.rcRow}>
-                          <div
-                            className={`${style.rcRowItem} ${isChk ? style.rcRowItemChecked : ""}`}
-                          >
-                            <input
-                              type="checkbox"
-                              className={style.rcCheckbox}
-                              checked={isChk}
-                              onChange={() => toggleForRight(item)}
-                            />
-                            <span
-                              className={style.rcRowName}
-                              onClick={() => toggleForRight(item)}
+                    <div className={style.rcPanelBody}>
+                      {isLeftLoading ? (
+                        <p className={style.rcEmpty}>Loading…</p>
+                      ) : availableForRight.length === 0 ? (
+                        <p className={style.rcEmpty}>
+                          All departments have been assigned regional call responsibilities.
+                        </p>
+                      ) : availableForRight.map((item, idx) => {
+                        const name     = getItemName(item);
+                        const children = getChildren(item);
+                        const isExp    = expandedLeft[name];
+                        const isChk    = isSelectedForRight(item);
+                        return (
+                          <div key={item?.id || idx} className={style.rcRow}>
+                            <div
+                              className={`${style.rcRowItem} ${isChk ? style.rcRowItemChecked : ""}`}
                             >
-                              {name}
-                            </span>
-                            {children.length > 0 && (
-                              <button
-                                className={style.rcExpandBtn}
-                                onClick={(e) => { e.stopPropagation(); toggleLeft(name); }}
+                              <input
+                                type="checkbox"
+                                className={style.rcCheckbox}
+                                checked={isChk}
+                                onChange={() => toggleForRight(item)}
+                              />
+                              <span
+                                className={style.rcRowName}
+                                onClick={() => toggleForRight(item)}
                               >
-                                {isExp ? "−" : "+"}
-                              </button>
-                            )}
-                          </div>
-                          {isExp && children.map((child, ci) => (
-                            <div key={ci} className={style.rcChildRow}>
-                              <span className={style.rcChildName}>
-                                {child?.name || child?.serviceName || ""}
+                                {name}
                               </span>
+                              {children.length > 0 && (
+                                <button
+                                  className={style.rcExpandBtn}
+                                  onClick={(e) => { e.stopPropagation(); toggleLeft(name); }}
+                                >
+                                  {isExp ? "−" : "+"}
+                                </button>
+                              )}
                             </div>
-                          ))}
-                        </div>
-                      );
-                    })}
-                  </div>
+                            {isExp && children.map((child, ci) => (
+                              <div key={ci} className={style.rcChildRow}>
+                                <span className={style.rcChildName}>
+                                  {child?.name || child?.serviceName || ""}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
 
                 {/* ── Centre: » and « buttons stacked vertically ── */}
                 <div className={style.rcSelectCol}>
-                  {/* » — move left → right */}
                   <button
                     className={style.rcSelectBtn}
                     onClick={handleMoveRight}
@@ -744,7 +751,6 @@ const RegionalCallResponsibilities = () => {
                   >
                     »
                   </button>
-                  {/* « — move right → left */}
                   <button
                     className={`${style.rcSelectBtn} ${style.rcSelectBtnBack}`}
                     onClick={handleMoveLeft}
@@ -765,7 +771,6 @@ const RegionalCallResponsibilities = () => {
                       onClick={() => { setNewDeptName(""); setShowAddDialog(true); }}
                       style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", padding: 0 }}
                     >
-                      {/* + inside a circle, centred */}
                       <span style={{
                         display: "inline-flex", alignItems: "center", justifyContent: "center",
                         width: 18, height: 18,
@@ -780,7 +785,6 @@ const RegionalCallResponsibilities = () => {
                     <div className={style.rcSiteRow}>
                       <img src={IndustriesEntityFolder} alt="" className={style.rcFolderIcon} />
                       <span className={style.rcSiteName}>{siteName.toUpperCase()}</span>
-                      {/* + / − toggle */}
                       <button
                         className={style.rcSiteToggle}
                         onClick={() => setIsRightCollapsed((p) => !p)}
@@ -792,122 +796,119 @@ const RegionalCallResponsibilities = () => {
                   )}
 
                   {!isRightCollapsed && (
-                  <div className={style.rcPanelBody}>
-                    {isRightLoading ? (
-                      <p className={style.rcEmpty}>Loading…</p>
-                    ) : regionalDepts.length === 0 ? (
-                      <p className={style.rcEmpty}>
-                        If you would like to setup your custom list for your site(s) you can
-                        select from the default list on the left, edit to change labels as needed,
-                        and also add new departments / service area by clicking on the add icon.
-                      </p>
-                    ) : regionalDepts.map((item, idx) => {
-                      const name     = getItemName(item);
-                      const children = getChildren(item);
-                      const isExp    = expandedRight[name];
-                      const isChk    = isSelectedForLeft(item);
-                      return (
-                        <div key={item?.id || idx} className={style.rcRow}>
-                          <div
-                            className={`${style.rcRowItem} ${isChk ? style.rcRowItemChecked : ""}`}
-                          >
-                            <input
-                              type="checkbox"
-                              className={style.rcCheckbox}
-                              checked={isChk}
-                              onChange={() => toggleForLeft(item)}
-                            />
-                            {children.length > 0 && (
-                              <button
-                                className={style.rcExpandBtn}
-                                onClick={() => toggleRight(name)}
-                              >
-                                {isExp ? "−" : "+"}
-                              </button>
-                            )}
-                            <span className={style.rcRowName}>{name}</span>
-                            <div className={style.rcActions}>
-                              <img
-                                src={EditHcRow}
-                                alt="Edit"
-                                className={style.rcActionIcon}
-                                title="Edit"
-                                onClick={() => openEditDialog(item)}
+                    <div className={style.rcPanelBody}>
+                      {isRightLoading ? (
+                        <p className={style.rcEmpty}>Loading…</p>
+                      ) : regionalDepts.length === 0 ? (
+                        <p className={style.rcEmpty}>
+                          Select from the default list on the left, edit to change labels as needed,
+                          and also add new departments / service area by clicking on the add icon.
+                        </p>
+                      ) : regionalDepts.map((item, idx) => {
+                        const name     = getItemName(item);
+                        const children = getChildren(item);
+                        const isExp    = expandedRight[name];
+                        const isChk    = isSelectedForLeft(item);
+                        return (
+                          <div key={item?.id || idx} className={style.rcRow}>
+                            <div
+                              className={`${style.rcRowItem} ${isChk ? style.rcRowItemChecked : ""}`}
+                            >
+                              <input
+                                type="checkbox"
+                                className={style.rcCheckbox}
+                                checked={isChk}
+                                onChange={() => toggleForLeft(item)}
                               />
-                              <img
-                                src={DeleteHcFolder}
-                                alt="Remove"
-                                className={style.rcActionIcon}
-                                title="Remove"
-                                onClick={async () => {
-                                  const n = getItemName(item);
-                                  const itemName = getItemName(item)?.trim()?.toLowerCase();
-                                  const isNewlyCreated =
-                                    item?._isNew === true ||
-                                    (item?.id    && newlyCreatedIdsRef.current.has(item.id)) ||
-                                    (itemName    && newlyCreatedNamesRef.current.has(itemName));
+                              {children.length > 0 && (
+                                <button
+                                  className={style.rcExpandBtn}
+                                  onClick={() => toggleRight(name)}
+                                >
+                                  {isExp ? "−" : "+"}
+                                </button>
+                              )}
+                              <span className={style.rcRowName}>{name}</span>
+                              <div className={style.rcActions}>
+                                <img
+                                  src={EditHcRow}
+                                  alt="Edit"
+                                  className={style.rcActionIcon}
+                                  title="Edit"
+                                  onClick={() => openEditDialog(item)}
+                                />
+                                <img
+                                  src={DeleteHcFolder}
+                                  alt="Remove"
+                                  className={style.rcActionIcon}
+                                  title="Remove"
+                                  onClick={async () => {
+                                    const n = getItemName(item);
+                                    const itemName = n?.trim()?.toLowerCase();
+                                    const isNewlyCreated =
+                                      item?._isNew === true ||
+                                      (item?.id    && newlyCreatedIdsRef.current.has(item.id)) ||
+                                      (itemName    && newlyCreatedNamesRef.current.has(itemName));
 
-                                  // Remove from right panel immediately
-                                  deletedNamesRef.current.add(n.toLowerCase());
-                                  setRegionalDepts((prev) => {
-                                    const updated = prev.filter((d) => getItemName(d) !== n);
-                                    saveRegionalIds(updated);
-                                    return updated;
-                                  });
+                                    deletedNamesRef.current.add(n.toLowerCase());
+                                    setRegionalDepts((prev) => {
+                                      const updated = prev.filter((d) => getItemName(d) !== n);
+                                      saveRegionalIds(updated);
+                                      return updated;
+                                    });
 
-                                  if (item?.id && !item?._pending) {
-                                    try {
-                                      if (isNewlyCreated) {
-                                        // Newly added via + button → fully DELETE from backend
-                                        // AND hide from left panel
-                                        deletedIdsRef.current.add(item.id);
-                                        setMyDepartments((prev) =>
-                                          prev.filter((d) => d?.id !== item.id)
-                                        );
-                                        await DELETE(`entity-service/department/${item.id}`);
-                                        console.log("[RegionalCall] fully deleted newly-created dept:", n);
-                                      } else {
-                                        // Standard list item → just unset regionalCall flag
-                                        // so it reappears in left panel (correct behaviour)
-                                        const payload = {
-                                          departmentName: item?.departmentName || item?.departmentGroupBy || { name: n },
-                                          aliasName1:     item?.aliasName1   || "",
-                                          aliasName2:     item?.aliasName2   || "",
-                                          serviceAreas:   (item?.serviceAreas || []).map((a) => ({
-                                            name: a?.name || a?.serviceName || "",
-                                            aliasName1: a?.aliasName1 || "",
-                                            aliasName2: a?.aliasName2 || "",
-                                          })),
-                                          siteTypeId:     siteTypeId ? { id: siteTypeId } : undefined,
-                                          regionalCall:   false,
-                                        };
-                                        await PUT(`entity-service/department/${item.id}`, JSON.stringify(payload));
+                                    if (item?.id && !item?._pending) {
+                                      try {
+                                        if (isNewlyCreated) {
+                                          deletedIdsRef.current.add(item.id);
+                                          setMyDepartments((prev) =>
+                                            prev.filter((d) => d?.id !== item.id)
+                                          );
+                                          await DELETE(`entity-service/department/${item.id}`);
+                                          console.log("[RegionalCall] fully deleted newly-created dept:", n);
+                                        } else {
+                                          // ── FIX 8: Use correct field name + enum value ───────
+                                          // Old (wrong): regionalCall: false
+                                          // New (correct): regionalCallResponsibilities: "NO"
+                                          const payload = {
+                                            departmentName:              item?.departmentName || item?.departmentGroupBy || { name: n },
+                                            aliasName1:                  item?.aliasName1   || "",
+                                            aliasName2:                  item?.aliasName2   || "",
+                                            serviceAreas:                (item?.serviceAreas || []).map((a) => ({
+                                              name:       a?.name || a?.serviceName || "",
+                                              aliasName1: a?.aliasName1 || "",
+                                              aliasName2: a?.aliasName2 || "",
+                                            })),
+                                            siteTypeId:                  siteTypeId ? { id: siteTypeId } : undefined,
+                                            regionalCallResponsibilities: REGIONAL_CALL.NO, // ✅ FIXED
+                                          };
+                                          await PUT(`entity-service/department/${item.id}`, JSON.stringify(payload));
+                                        }
+                                      } catch (e) {
+                                        console.warn("[RegionalCall] delete/unset failed:", e?.message);
                                       }
-                                    } catch (e) {
-                                      console.warn("[RegionalCall] delete failed:", e?.message);
                                     }
-                                  }
-                                  SuccessToaster("Removed.");
-                                }}
-                              />
+                                    SuccessToaster("Removed.");
+                                  }}
+                                />
+                              </div>
                             </div>
+                            {isExp && children.map((child, ci) => (
+                              <div key={ci} className={style.rcChildRow}>
+                                <span className={style.rcChildName}>
+                                  {child?.name || child?.serviceName || ""}
+                                </span>
+                              </div>
+                            ))}
                           </div>
-                          {isExp && children.map((child, ci) => (
-                            <div key={ci} className={style.rcChildRow}>
-                              <span className={style.rcChildName}>
-                                {child?.name || child?.serviceName || ""}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      );
-                    })}
-                  </div>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
               </div>
 
-              {/* ── Footer — SAVE removed: » button auto-saves immediately ── */}
+              {/* FOOTER */}
               <div className={style.rcFooter}>
                 <button
                   className={`${style.rcSaveBtn} ${style.rcMarkDoneBtn}`}
@@ -941,7 +942,6 @@ const RegionalCallResponsibilities = () => {
             background: "#fff", borderRadius: 12, padding: 28,
             width: 440, boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
           }}>
-            {/* Header */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <p style={{ margin: 0, fontWeight: 700, fontSize: 14, color: "var(--primary-color)", textTransform: "uppercase" }}>
                 Add Department / Service Area
@@ -956,7 +956,6 @@ const RegionalCallResponsibilities = () => {
 
             <div style={{ borderBottom: "1px solid #dee2e6", marginBottom: 20 }} />
 
-            {/* Department name input */}
             <div style={{ marginBottom: 20 }}>
               <label style={{
                 display: "block", fontSize: 11, fontWeight: 600,
@@ -975,13 +974,11 @@ const RegionalCallResponsibilities = () => {
                 style={{
                   width: "100%", padding: "8px 12px",
                   border: "1px solid #ccc", borderRadius: 4,
-                  fontSize: 13, boxSizing: "border-box",
-                  outline: "none",
+                  fontSize: 13, boxSizing: "border-box", outline: "none",
                 }}
               />
             </div>
 
-            {/* Buttons */}
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
               <button
                 onClick={() => { setShowAddDialog(false); setNewDeptName(""); }}
@@ -1023,7 +1020,6 @@ const RegionalCallResponsibilities = () => {
             background: "#fff", borderRadius: 12, padding: 28,
             width: 440, boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
           }}>
-            {/* Header */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <p style={{ margin: 0, fontWeight: 700, fontSize: 14, color: "var(--primary-color)", textTransform: "uppercase" }}>
                 Edit Department / Service Area
@@ -1038,7 +1034,6 @@ const RegionalCallResponsibilities = () => {
 
             <div style={{ borderBottom: "1px solid #dee2e6", marginBottom: 20 }} />
 
-            {/* Name input */}
             <div style={{ marginBottom: 20 }}>
               <label style={{
                 display: "block", fontSize: 11, fontWeight: 600,
@@ -1061,7 +1056,6 @@ const RegionalCallResponsibilities = () => {
               />
             </div>
 
-            {/* Buttons */}
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
               <button
                 onClick={() => { setShowEditDialog(false); setEditItem(null); setEditDeptName(""); }}

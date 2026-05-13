@@ -152,8 +152,21 @@ const DepartmentDialog = ({
         await PUT(`entity-service/department/${id}`, JSON.stringify([payload]));
         SuccessToaster("Department updated successfully.");
         if (isSaveAndExit) {
-          // ✅ Pass null for newItem on edit — parent will refresh in place
-          handleClose(true, null);
+          // ✅ FIX: Pass full updatedItem back to parent so it can update
+          // local state immediately with the new serviceAreas the user typed.
+          // Old: handleClose(true, null) → parent called loadCustomList()
+          //      → API returned no serviceAreas → edit dialog showed empty
+          // New: handleClose(true, updatedItem) → parent uses updatedItem
+          //      → serviceAreas shown correctly immediately ✅
+          const updatedItem = {
+            ...selectedApplicant,               // keep id and all existing fields
+            name:           departName.trim(),
+            departmentName: { name: departName.trim() },
+            aliasName1:     aliasName1.trim(),
+            aliasName2:     aliasName2.trim(),
+            serviceAreas:   payload.serviceAreas, // ✅ what user just typed
+          };
+          handleClose(true, updatedItem);
         } else {
           resetFormFields();
         }

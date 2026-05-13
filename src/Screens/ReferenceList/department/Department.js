@@ -180,77 +180,80 @@ const Departments = () => {
     } finally { setIsStandardLoading(false); }
   };
 
-  // ── CORE FIX: loadCustomList uses NAME-based whitelist ─────────────────────
+  // loadCustomList — shows ALL departments for this site
+  // FIX: Removed whitelist filter.
+  // GET /department/{siteId} already returns only this hospital's departments.
+  // Whitelist was hiding valid records added via backend/old code.
+  // Whitelist is now only used to track SELECT flow (prevent duplicates).
   const loadCustomList = async () => {
     setIsCustomLoading(true);
     try {
-      const whitelist = whitelistRef.current;
-
-      if (whitelist.size === 0) {
-        setCustomList([]);
-        return;
-      }
-
       let data = [];
 
-      // Primary: refListView (returns standard + selected departments)
-      try {
-        const res = await GET(`entity-service/department/refListView?siteTypeId=${siteTypeId}&searchText=`);
-        const raw = res?.data;
-        if (Array.isArray(raw) && raw.length > 0) data = raw;
-        else if (Array.isArray(raw?.content) && raw.content.length > 0) data = raw.content;
-      } catch (e) { console.warn("[Dept] refListView failed:", e?.message); }
-
-      // Also fetch ALL departments directly — catches dialog-created items
-      // that may not appear in refListView
-      let allData = [];
-      try {
-        const res2 = await GET("entity-service/department");
-        const raw2 = res2?.data;
-        if (Array.isArray(raw2) && raw2.length > 0) allData = raw2;
-        else if (Array.isArray(raw2?.content) && raw2.content.length > 0) allData = raw2.content;
-      } catch (e) { console.warn("[Dept] /department fetch failed:", e?.message); }
-
-      // Merge: prefer refListView items, supplement with allData for any missing
-      const merged = [...data];
-      const mergedNorms = new Set(data.map(normaliseName).filter(Boolean));
-      for (const item of allData) {
-        const n = normaliseName(item);
-        if (n && !mergedNorms.has(n)) {
-          merged.push(item);
-          mergedNorms.add(n);
-        }
-      }
-
-      // Fallback: siteId-scoped if still empty
-      if (merged.length === 0 && siteId) {
+      // PRIMARY: GET /department/{siteId} — only this site's depts (~10 records)
+      if (siteId) {
         try {
           const res = await GET(`entity-service/department/${siteId}`);
           const raw = res?.data;
-          if (Array.isArray(raw) && raw.length > 0) merged.push(...raw);
-        } catch (e) { console.warn("[Dept] siteId fallback failed:", e?.message); }
+          data = Array.isArray(raw) ? raw
+            : Array.isArray(raw?.content) ? raw.content : [];
+          console.log(`[Dept] /department/${siteId}: ${data.length} records`);
+        } catch (e) { console.warn('[Dept] /department/{siteId} failed:', e?.message); }
       }
 
-      if (merged.length === 0) {
-        console.warn("[Dept] All endpoints returned 0 items — keeping local state.");
+      // FALLBACK 1: refListView by siteTypeId
+      if (data.length === 0) {
+        try {
+          const res = await GET(`entity-service/department/refListView?siteTypeId=${siteTypeId}&searchText=`);
+          const raw = res?.data;
+          data = Array.isArray(raw) ? raw
+            : Array.isArray(raw?.content) ? raw.content : [];
+          console.log(`[Dept] refListView fallback: ${data.length} records`);
+        } catch (e) { console.warn('[Dept] refListView failed:', e?.message); }
+      }
+
+      // FALLBACK 2: GET /department filtered by siteTypeId
+      if (data.length === 0) {
+        try {
+          const res = await GET('entity-service/department');
+          const raw = res?.data;
+          const all = Array.isArray(raw) ? raw
+            : Array.isArray(raw?.content) ? raw.content : [];
+          data = siteTypeId
+            ? all.filter((item) => {
+                const s = item?.siteTypeId?.id ||
+                  (typeof item?.siteTypeId === 'string' ? item.siteTypeId : '');
+                return s === siteTypeId;
+              })
+            : all;
+          console.warn(`[Dept] last resort: total=${all.length} filtered=${data.length}`);
+        } catch (e) { console.warn('[Dept] fallback failed:', e?.message); }
+      }
+
+      if (data.length === 0) {
+        console.warn('[Dept] All endpoints returned 0 — keeping local state.');
         return;
       }
 
-      console.log("[Dept] whitelist size:", whitelist.size, "| merged data:", merged.length);
-
-      // Filter by NAME (not ID) — picks one representative per whitelisted name
+      // Deduplicate by name only (API may return same dept with different IDs)
       const seenNames = new Set();
       const result = [];
-      for (const item of merged) {
+      for (const item of data) {
         const norm = normaliseName(item);
-        if (!norm) continue;
-        if (whitelist.has(norm) && !seenNames.has(norm)) {
-          seenNames.add(norm);
-          result.push(item);
-        }
+        if (!norm || seenNames.has(norm)) continue;
+        seenNames.add(norm);
+        result.push({ ...item, serviceAreas: item?.serviceAreas || [] });
       }
 
-      console.log("[Dept] Filtered by whitelist:", result.length, "| whitelist:", [...whitelist]);
+      console.log(`[Dept] showing all ${result.length} site departments`);
+
+      // Sync whitelist so SELECT flow knows what's already in custom list
+      result.forEach((item) => {
+        const norm = normaliseName(item);
+        if (norm) whitelistRef.current.add(norm);
+      });
+      saveWhitelist(siteTypeId, whitelistRef.current);
+
       setCustomList(result);
     } finally {
       setIsCustomLoading(false);
@@ -261,12 +264,14 @@ const Departments = () => {
   const handleSelect = async () => {
     if (selectedStandardItems.length === 0) return;
 
-    const existingNames = new Set(customList.map(normaliseName));
+    // FIX: Compare by name - standard list IDs differ from custom list IDs
+    const existingCustomNames = new Set(customList.map(normaliseName));
     const toAdd = selectedStandardItems.filter(
-      (item) => !existingNames.has(normaliseName(item))
+      (item) => !existingCustomNames.has(normaliseName(item))
     );
 
     if (toAdd.length === 0) {
+      ErrorToaster('Selected department(s) already exist in your custom list.');
       setSelectedStandardItems([]);
       return;
     }
@@ -282,7 +287,10 @@ const Departments = () => {
           aliasName1: child?.aliasName1 || "",
           aliasName2: child?.aliasName2 || "",
         })),
-        siteTypeId: siteTypeId ? { id: siteTypeId } : undefined,
+        // FIX: Use siteId (not siteTypeId) to match GET /department/{siteId}
+        // GET uses siteId=66fa... but POST was sending siteTypeId=63ae... (different)
+        // Newly added items must be stored under the same siteId used for fetching
+        siteTypeId: siteId ? { id: siteId } : undefined,
       }));
 
       await POST("entity-service/department", JSON.stringify(payload));
@@ -295,7 +303,28 @@ const Departments = () => {
       });
       saveWhitelist(siteTypeId, whitelistRef.current);
 
-      // Refresh custom list from API (now whitelist includes new names)
+      // FIX 1: Optimistically add to customList immediately
+      // Do NOT call loadCustomList() after SELECT because
+      // GET /department/{siteId} may not return the newly POSTed item
+      // immediately (backend indexing delay or different siteId mapping).
+      // The optimistic item stays in the list permanently.
+      // On next page load, loadCustomList() will fetch fresh from API.
+      const newItems = toAdd.map((item) => ({
+        ...item,
+        name:         getItemName(item),
+        departmentName: { name: getItemName(item) },
+        serviceAreas: getChildren(item).map((child) => ({
+          name:       child?.name || child?.serviceName || '',
+          aliasName1: child?.aliasName1 || '',
+          aliasName2: child?.aliasName2 || '',
+        })),
+        _pending: false,
+      }));
+      setCustomList((prev) => [...prev, ...newItems]);
+
+      // Now that siteId matches in both POST and GET,
+      // refresh from API after short delay to get server-confirmed data
+      await new Promise((r) => setTimeout(r, 800));
       await loadCustomList();
     } catch (err) {
       console.error("[Dept] SELECT save error:", err);
@@ -328,39 +357,83 @@ const Departments = () => {
       return;
     }
 
-    // Attempt backend delete via PUT with deleted flag
+    // FIX 2: Use DELETE endpoint (Swagger: DELETE /department/{id})
+    // not PUT with deleted:true, because soft-delete via PUT means
+    // GET /department/{siteId} still returns the item on next load.
+    // Hard DELETE removes it permanently so it reappears in standard list.
     try {
-      const payload = {
-        departmentName: { name },
-        aliasName1:     item?.aliasName1 || "",
-        aliasName2:     item?.aliasName2 || "",
-        serviceAreas:   [],
-        deleted:        true,
-        active:         false,
-      };
-      await PUT(`entity-service/department/${id}`, JSON.stringify(payload));
-      console.log("[Dept] PUT deleted=true success for id:", id);
+      await DELETE(`entity-service/department/${id}`);
+      console.log("[Dept] DELETE success for id:", id);
       SuccessToaster("Department removed.");
+      // Item already removed from customList optimistically above.
+      // filteredStandard will now auto-show it back in standard list
+      // because customList no longer contains it.
     } catch (putErr) {
-      console.warn("[Dept] PUT delete failed:", putErr?.message);
-      // Restore whitelist and UI on failure
-      if (norm) {
-        whitelistRef.current.add(norm);
-        saveWhitelist(siteTypeId, whitelistRef.current);
+      console.warn("[Dept] DELETE failed, trying PUT soft-delete:", putErr?.message);
+      // Fallback: soft delete via PUT
+      try {
+        const payload = {
+          departmentName: { name },
+          aliasName1:     item?.aliasName1 || "",
+          aliasName2:     item?.aliasName2 || "",
+          serviceAreas:   [],
+          deleted:        true,
+          active:         false,
+        };
+        await PUT(`entity-service/department/${id}`, JSON.stringify(payload));
+        SuccessToaster("Department removed.");
+      } catch (err2) {
+        console.warn("[Dept] soft-delete also failed:", err2?.message);
+        // Restore whitelist and UI on total failure
+        if (norm) {
+          whitelistRef.current.add(norm);
+          saveWhitelist(siteTypeId, whitelistRef.current);
+        }
+        setCustomList((prev) => [...prev, item]);
+        ErrorToaster("Could not delete department. Please try again.");
       }
-      setCustomList((prev) => [...prev, item]);
-      ErrorToaster("Could not delete department. Please try again.");
     }
   };
 
   // ── Dialog close handler ───────────────────────────────────────────────────
+  // DepartmentDialog calls:
+  //   ADD  → handleClose(true, newItem)     — new item object
+  //   EDIT → handleClose(true, updatedItem) — updated item object (with id)
+  //   CANCEL → handleClose(false, null)
   const handleDialogClose = async (needRefetch, newItem) => {
     setIsDialogOpen(false);
-    setIsEdit(false);
 
     if (needRefetch) {
-      if (newItem) {
-        // Newly added via dialog:
+      const hasId = !!(newItem?.id || editData?.id);
+      const wasEdit = isEdit && hasId;
+
+      if (wasEdit) {
+        // ── EDIT flow ────────────────────────────────────────────────────
+        // ✅ FIX: Use updatedItem from dialog to update local state immediately.
+        // Do NOT call loadCustomList() — API loses serviceAreas in response.
+        // Old: await loadCustomList() → API had no serviceAreas → empty ❌
+        // New: update local state with newItem.serviceAreas directly ✅
+        if (newItem) {
+          const norm = normaliseName(newItem);
+          setCustomList((prev) =>
+            prev.map((c) =>
+              normaliseName(c) === norm
+                ? {
+                    ...c,
+                    name:           newItem.departmentName?.name || newItem.name || c.name,
+                    departmentName: newItem.departmentName || c.departmentName,
+                    aliasName1:     newItem.aliasName1 ?? c.aliasName1,
+                    aliasName2:     newItem.aliasName2 ?? c.aliasName2,
+                    serviceAreas:   newItem.serviceAreas?.length > 0
+                      ? newItem.serviceAreas   // ✅ what user just typed
+                      : c.serviceAreas || [],
+                  }
+                : c
+            )
+          );
+        }
+      } else if (newItem) {
+        // ── ADD flow ──────────────────────────────────────────────────────
         // 1. Optimistically show it in the UI immediately
         const norm = normaliseName(newItem);
         const name = newItem?.departmentName?.name || newItem?.name || "";
@@ -375,13 +448,10 @@ const Departments = () => {
           setCustomList((prev) => [...prev, { ...newItem }]);
         }
 
-        // 2. Wait briefly then call loadCustomList which now fetches BOTH
-        //    refListView AND entity-service/department — so dialog-created items
-        //    that only appear in the direct endpoint will be found correctly.
+        // 2. Wait briefly then refresh from API
         await new Promise((r) => setTimeout(r, 600));
         try {
           await loadCustomList();
-          // If item still not in list (API stale), keep optimistic version
           setCustomList((prev) => {
             const foundNew = prev.some((r) => normaliseName(r) === norm);
             if (!foundNew) return [...prev, { ...newItem }];
@@ -389,13 +459,11 @@ const Departments = () => {
           });
         } catch (e) {
           console.warn("[Dept] post-dialog refresh failed:", e?.message);
-          // Optimistic state already set above — good enough
         }
-      } else {
-        // Edited — refresh full list from API
-        await loadCustomList();
       }
     }
+
+    setIsEdit(false);
     setEditData(null);
   };
 
@@ -425,8 +493,12 @@ const Departments = () => {
   const isSelected = (item) =>
     selectedStandardItems.some((s) => normaliseName(s) === normaliseName(item));
 
+  // Show standard list items NOT already in custom list (by name match)
+  // After delete from custom list -> name removed -> item reappears here
   const customNames      = new Set(customList.map(normaliseName));
-  const filteredStandard = standardList.filter((item) => !customNames.has(normaliseName(item)));
+  const filteredStandard = standardList.filter(
+    (item) => !customNames.has(normaliseName(item))
+  );
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (

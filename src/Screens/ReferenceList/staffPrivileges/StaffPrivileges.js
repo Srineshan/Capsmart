@@ -28,13 +28,13 @@ const StaffPrivileges = () => {
   const [refetchTrigger, setRefetchTrigger] = useState(0);
 
   const COLS = [
-    { head: "DEPARTMENT",          key: "departmentLabel"   },
-    { head: "SERVICE AREA",        key: "serviceAreaLabel"  },
-    { head: "PRIVILEGE SET TITLE", key: "privilegeSetTitle" },
-    { head: "CORE",                key: "coreCount"         },
-    { head: "RESTRICTED",          key: "restrictedCount"   },
-    { head: "NON-CORE",            key: "nonCoreCount"      },
-    { head: "LAST BOD APPROVAL",   key: "bodApprovalDate"   },
+    { head: "DEPARTMENT",          key: "departmentLabel",   width: "20%" },
+    { head: "SERVICE AREA",        key: "serviceAreaLabel",  width: "14%" },
+    { head: "PRIVILEGE SET TITLE", key: "privilegeSetTitle", width: "16%" },
+    { head: "CORE",                key: "coreCount",         width: "7%"  },
+    { head: "RESTRICTED",          key: "restrictedCount",   width: "9%"  },
+    { head: "NON-CORE",            key: "nonCoreCount",      width: "8%"  },
+    { head: "LAST BOD\nAPPROVAL",  key: "bodApprovalDate",   width: "11%" },
   ];
 
   // ── Boot ─────────────────────────────────────────────────────────────────────
@@ -90,8 +90,14 @@ const StaffPrivileges = () => {
         res?.content || (Array.isArray(res) ? res : []);
       const map = {};
       (Array.isArray(raw) ? raw : []).forEach(dept => {
-        if (dept?.id)
-          map[dept.id] = dept?.departmentName?.name || dept?.name || dept?.departmentName || "";
+        if (!dept?.id) return;
+        const dn = dept?.departmentName;
+        const dname =
+          (typeof dn === "object" && dn !== null ? dn?.name || "" : "") ||
+          (typeof dn === "string" ? dn : "") ||
+          (typeof dept?.name === "string" ? dept.name : "") ||
+          "";
+        map[dept.id] = String(dname);
       });
       setDepartmentMap(map);
     } catch (e) { console.warn("[SP] departmentMap:", e?.message); }
@@ -102,7 +108,14 @@ const StaffPrivileges = () => {
       const res  = await GET("entity-service/sites");
       const raw  = res?.data?.content || res?.data?.data || res?.data ||
         res?.content || (Array.isArray(res) ? res : []);
-      setSiteList(Array.isArray(raw) ? raw : []);
+      // Deduplicate sites by id
+      const seen = new Set();
+      const unique = (Array.isArray(raw) ? raw : []).filter(s => {
+        if (!s?.id || seen.has(s.id)) return false;
+        seen.add(s.id);
+        return true;
+      });
+      setSiteList(unique);
     } catch (e) { console.error("[SP] sites:", e?.message); }
   };
 
@@ -144,8 +157,13 @@ const StaffPrivileges = () => {
       const raw = dr?.data?.content || dr?.data?.data || dr?.data ||
         dr?.content || (Array.isArray(dr) ? dr : []);
       (Array.isArray(raw) ? raw : []).forEach(d => {
-        if (d?.id)
-          freshDeptMap[d.id] = d?.departmentName?.name || d?.name || "";
+        if (!d?.id) return;
+        const dn2 = d?.departmentName;
+        freshDeptMap[d.id] = String(
+          (typeof dn2 === "object" && dn2 !== null ? dn2?.name : "") ||
+          (typeof dn2 === "string" ? dn2 : "") ||
+          (typeof d?.name === "string" ? d.name : "") || ""
+        );
       });
     } catch (_) {}
 
@@ -158,10 +176,14 @@ const StaffPrivileges = () => {
     const map    = deptMap || departmentMap;
     const deptId = row?.department?.id || "";
 
-    const deptName =
-      row?.department?.departmentName?.name ||
-      row?.department?.name ||
-      (deptId && map[deptId]) || "-";
+    const rawDN = row?.department?.departmentName;
+    const deptName = String(
+      (typeof rawDN === "object" && rawDN !== null ? rawDN?.name : "") ||
+      (typeof rawDN === "string" ? rawDN : "") ||
+      (typeof row?.department?.name === "string" ? row.department.name : "") ||
+      (deptId && typeof map[deptId] === "string" ? map[deptId] : "") ||
+      "-"
+    );
 
     const sa = row?.serviceArea || row?.serviceAreas || [];
     const serviceAreaName = Array.isArray(sa) && sa.length > 0
@@ -256,7 +278,6 @@ const StaffPrivileges = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this privilege set?")) return;
     try {
       await DELETE(`entity-service/staffPrivilege/${id}`);
       SuccessToaster("Deleted successfully");
@@ -356,16 +377,30 @@ const StaffPrivileges = () => {
                     Loading privilege sets...
                   </div>
                 ) : (
-                  <table className={style.applicantTable}>
+                  <table className={style.applicantTable}
+                    style={{ tableLayout:"fixed", width:"100%" }}>
                     <thead>
                       <tr className={style.applicantHeader}>
                         {COLS.map((col, i) => (
                           <th key={i}
-                            className={i === 0 ? style.firstColumn : style.centerAligned}>
-                            {col.head}
+                            className={i === 0 ? style.firstColumn : style.centerAligned}
+                            style={{
+                              width: col.width || "auto",
+                              padding: "8px 6px",
+                              fontSize: 11,
+                              fontWeight: 700,
+                              letterSpacing: "0.3px",
+                              lineHeight: "1.3",
+                              whiteSpace: "normal",
+                              wordBreak: "break-word",
+                              verticalAlign: "bottom",
+                            }}>
+                            {col.head.split("\n").map((line, li) => (
+                              <span key={li} style={{ display:"block" }}>{line}</span>
+                            ))}
                           </th>
                         ))}
-                        <th />
+                        <th style={{ width:"10%", padding:"8px 6px" }} />
                       </tr>
                     </thead>
                     <tbody>
@@ -388,7 +423,15 @@ const StaffPrivileges = () => {
                                   ci === 0
                                     ? `${style.leftAligned} ${style.firstColumn}`
                                     : style.centerAligned
-                                }>
+                                }
+                                style={{
+                                  padding: "10px 6px",
+                                  fontSize: 13,
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: ci === 0 ? "normal" : "nowrap",
+                                  wordBreak: ci === 0 ? "break-word" : "normal",
+                                }}>
                                 {/* "Set up" badge for rows with no title/privileges yet */}
                                 {col.key === "privilegeSetTitle" && row.isSetupOnly ? (
                                   <span
@@ -426,15 +469,8 @@ const StaffPrivileges = () => {
                 )}
               </div>
 
-              {/* Footer */}
-              <div style={{ display:"flex", justifyContent:"flex-end", gap:12, marginTop:20 }}>
-                <button onClick={handleSaveInProgress}
-                  style={{ backgroundColor:"#fff", color:"#06617A",
-                    border:"1px solid #06617A", borderRadius:6,
-                    padding:"10px 24px", fontSize:14, fontWeight:600,
-                    cursor:"pointer", letterSpacing:"0.5px" }}>
-                  SAVE IN-PROGRESS
-                </button>
+              {/* Footer — SAVE IN-PROGRESS removed per request */}
+              <div style={{ display:"flex", justifyContent:"flex-end", marginTop:20 }}>
                 <button onClick={handleMarkAsDone}
                   style={{ backgroundColor:"#06617A", color:"#fff",
                     border:"none", borderRadius:6,

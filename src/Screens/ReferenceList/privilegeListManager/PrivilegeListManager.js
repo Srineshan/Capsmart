@@ -1,13 +1,12 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { GET, PUT } from "../../dataSaver";
 import Navbar from "../../../Components/Navbar";
-import LevelTwoHeader from "../../../Components/LevelTwoHeader";
 import style from "./index.module.scss";
 import { formatInTimeZone } from "date-fns-tz";
 import { format } from "date-fns";
 import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
 import PrivilegeListManagerDialog from "./PrivilegeListManagerDialog";
-import { SuccessToaster } from "../../../utils/toaster";
+import { SuccessToaster, ErrorToaster } from "../../../utils/toaster";
 
 // ── Table column headers (matches Image 2 design) ─────────────────────────────
 const TABLE_HEAD = [
@@ -58,6 +57,8 @@ export const PrivilegeListManager = () => {
   // Filters
   const [filterDept,       setFilterDept]       = useState("");
   const [filterApplicant,  setFilterApplicant]  = useState("");
+  const [showAllDepts,     setShowAllDepts]     = useState(false);
+  const [showAllApplicants,setShowAllApplicants]= useState(false);
 
   // Dialog
   const [isDialogOpen,     setIsDialogOpen]     = useState(false);
@@ -65,6 +66,12 @@ export const PrivilegeListManager = () => {
   const [editData,         setEditData]         = useState(null);
 
   const [isLoading,        setIsLoading]        = useState(false);
+  const [showSearch,       setShowSearch]       = useState(false);
+  const [searchQuery,      setSearchQuery]      = useState("");
+  const [currentPage,      setCurrentPage]      = useState(1);
+  const [isBulkUploading,  setIsBulkUploading] = useState(false);
+  const ROWS_PER_PAGE = 50;
+  const bulkInputRef = React.useRef(null);
 
   // ── Boot ────────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -79,8 +86,9 @@ export const PrivilegeListManager = () => {
   }, [entityId]);
 
   useEffect(() => {
+    setCurrentPage(1);
     applyFilters();
-  }, [privileges, activeTab, subTab, filterDept, filterApplicant]);
+  }, [privileges, activeTab, subTab, filterDept, filterApplicant, searchQuery]);
 
   // ── API ──────────────────────────────────────────────────────────────────────
   const fetchEntity = async () => {
@@ -104,15 +112,36 @@ export const PrivilegeListManager = () => {
 
   const fetchApplicantTypes = async () => {
     try {
-      const { data } = await GET("entity-service/applicantType");
-      setApplicantTypes(data || []);
+      const res = await GET("entity-service/applicantType");
+      const raw = res?.data?.content || res?.data?.data || res?.data ||
+        res?.content || (Array.isArray(res) ? res : []);
+      const list = Array.isArray(raw) ? raw : [];
+      // Deduplicate by name
+      const seen = new Set();
+      const unique = list.filter(item => {
+        const label = (typeof item?.applicantType === "string"
+          ? item.applicantType
+          : Array.isArray(item?.applicantType) ? item.applicantType[0] : item?.name || "")
+          .trim().toLowerCase();
+        if (!label || seen.has(label)) return false;
+        seen.add(label);
+        return true;
+      });
+      setApplicantTypes(unique);
     } catch (e) { console.error("applicantTypes:", e); }
   };
 
   const fetchDepartments = async () => {
     try {
-      const { data } = await GET("entity-service/department");
-      setDepartments(data || []);
+      const res = await GET("entity-service/department");
+      const raw = res?.data?.content || res?.data?.data || res?.data ||
+        res?.content || (Array.isArray(res) ? res : []);
+      const list = Array.isArray(raw) ? raw : [];
+      // Extract department name properly
+      setDepartments(list.map(d => ({
+        id:   d.id,
+        name: d?.departmentName?.name || d?.name || "",
+      })));
     } catch (e) { console.error("departments:", e); }
   };
 
@@ -120,8 +149,10 @@ export const PrivilegeListManager = () => {
   const fetchPrivileges = async () => {
     try {
       setIsLoading(true);
-      const { data } = await GET("entity-service/privilegeMaster");
-      const list = data || [];
+      const res = await GET("entity-service/privilegeMaster");
+      const raw = res?.data?.content || res?.data?.data || res?.data ||
+        res?.content || (Array.isArray(res) ? res : []);
+      const list = Array.isArray(raw) ? raw : [];
       setPrivileges(list);
 
       // null status = treat as ACTIVE (new records may have null)
@@ -158,6 +189,15 @@ export const PrivilegeListManager = () => {
     // Sidebar filters
     if (filterDept)      rows = rows.filter(r => r.department?.id === filterDept || r.departmentId === filterDept);
     if (filterApplicant) rows = rows.filter(r => (r.applicantType || r.applicantTypes || []).some(a => a?.id === filterApplicant));
+
+    // Search by privilege ID or title
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      rows = rows.filter(r =>
+        String(r?.privilegeId || r?.id || "").toLowerCase().includes(q) ||
+        (r?.title || r?.privilegeTitle || "").toLowerCase().includes(q)
+      );
+    }
 
     setDisplayRows(rows);
   };
@@ -217,18 +257,26 @@ export const PrivilegeListManager = () => {
       <div className={style.applicantTypeBackground}>
         <div className={style.padding20}>
 
-          <LevelTwoHeader
-            heading="Privilege List Manager"
-            updatedTime={lastUpdatedDate ? `UPDATED ON ${lastUpdatedDate}` : ""}
-            path="/Screens/ReferenceList/customerAdminDashboard"
-            callingFrom="Customer Admin"
-            needHeader={false}
-            tileType="PrivilegeListManager"
-            handleOpenDialog={openAdd}
-            onAddClick={openAdd}
-            onCloseLevel2={() => handleCloseDialog(false)}
-            handleClose={() => handleCloseDialog(false)}
-          />
+          {/* Plain header — heading + updated time inline, close button right */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 16 }}>
+              <h2 style={{ margin: 0, fontSize: 24, fontWeight: 600, color: "#1a1a1a" }}>
+                Privilege List Manager
+              </h2>
+              {lastUpdatedDate && (
+                <span style={{ fontSize: 12, color: "#777", letterSpacing: 0.5, whiteSpace: "nowrap" }}>
+                  UPDATED ON {lastUpdatedDate}
+                </span>
+              )}
+            </div>
+            <button
+              onClick={() => { window.location.href = "/referencelist"; }}
+              style={{ background: "none", border: "none", cursor: "pointer", fontSize: 22, color: "#555", lineHeight: 1 }}
+              title="Close"
+            >
+              ×
+            </button>
+          </div>
 
           {/* Breadcrumb */}
           <div className={`${style.displayInRow} ${style.bottomTextStyle} ${style.marginTop10}`}
@@ -251,7 +299,7 @@ export const PrivilegeListManager = () => {
               flexDirection: "column",
               gap: 16,
               /* Sidebar scrolls independently if content overflows */
-              maxHeight: "calc(100vh - 180px)",
+              maxHeight: "calc(100vh - 140px)",
               overflowY: "auto",
               overflowX: "hidden",
             }}>
@@ -267,10 +315,14 @@ export const PrivilegeListManager = () => {
 
               {/* By Departments */}
               <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#52575d", marginBottom: 8 }}>
-                  By Departments
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#52575d", marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span>By Departments</span>
+                  <span style={{ fontSize: 11, color: "#06617A", cursor: "pointer" }}
+                    onClick={() => setShowAllDepts(p => !p)}>
+                    {showAllDepts ? "▲" : "▼"}
+                  </span>
                 </div>
-                {departments.slice(0, 3).map(dept => (
+                {(showAllDepts ? departments : departments.slice(0, 3)).map(dept => (
                   <label key={dept.id} style={{
                     display: "flex", alignItems: "center", gap: 8,
                     padding: "5px 0", cursor: "pointer", fontSize: 13, color: "#333",
@@ -279,36 +331,51 @@ export const PrivilegeListManager = () => {
                       checked={filterDept === dept.id}
                       onChange={() => setFilterDept(filterDept === dept.id ? "" : dept.id)}
                       style={{ accentColor: "#06617A", width: 14, height: 14, flexShrink: 0 }} />
-                    {dept?.departmentName?.name || dept?.name || "—"}
+                    {dept?.name || "—"}
                   </label>
                 ))}
                 {departments.length > 3 && (
-                  <span style={{ fontSize: 12, color: "#06617A", cursor: "pointer", marginTop: 4, display: "block" }}>
-                    See More
+                  <span
+                    style={{ fontSize: 12, color: "#06617A", cursor: "pointer", marginTop: 4, display: "block" }}
+                    onClick={() => setShowAllDepts(p => !p)}
+                  >
+                    {showAllDepts ? "See Less" : "See More"}
                   </span>
                 )}
               </div>
 
               {/* Search Applicants */}
               <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#52575d", marginBottom: 8 }}>
-                  Search Applicants
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#52575d", marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span>Search Applicants</span>
+                  <span style={{ fontSize: 11, color: "#06617A", cursor: "pointer" }}
+                    onClick={() => setShowAllApplicants(p => !p)}>
+                    {showAllApplicants ? "▲" : "▼"}
+                  </span>
                 </div>
-                {applicantTypes.slice(0, 3).map(at => (
-                  <label key={at.id} style={{
-                    display: "flex", alignItems: "center", gap: 8,
-                    padding: "5px 0", cursor: "pointer", fontSize: 13, color: "#333",
-                  }}>
-                    <input type="checkbox"
-                      checked={filterApplicant === at.id}
-                      onChange={() => setFilterApplicant(filterApplicant === at.id ? "" : at.id)}
-                      style={{ accentColor: "#06617A", width: 14, height: 14, flexShrink: 0 }} />
-                    {at?.applicantType || "—"}
-                  </label>
-                ))}
+                {(showAllApplicants ? applicantTypes : applicantTypes.slice(0, 3)).map(at => {
+                  const label = typeof at?.applicantType === "string" ? at.applicantType
+                    : Array.isArray(at?.applicantType) ? at.applicantType[0]
+                    : at?.name || "—";
+                  return (
+                    <label key={at.id} style={{
+                      display: "flex", alignItems: "center", gap: 8,
+                      padding: "5px 0", cursor: "pointer", fontSize: 13, color: "#333",
+                    }}>
+                      <input type="checkbox"
+                        checked={filterApplicant === at.id}
+                        onChange={() => setFilterApplicant(filterApplicant === at.id ? "" : at.id)}
+                        style={{ accentColor: "#06617A", width: 14, height: 14, flexShrink: 0 }} />
+                      {label}
+                    </label>
+                  );
+                })}
                 {applicantTypes.length > 3 && (
-                  <span style={{ fontSize: 12, color: "#06617A", cursor: "pointer", marginTop: 4, display: "block" }}>
-                    See More
+                  <span
+                    style={{ fontSize: 12, color: "#06617A", cursor: "pointer", marginTop: 4, display: "block" }}
+                    onClick={() => setShowAllApplicants(p => !p)}
+                  >
+                    {showAllApplicants ? "See Less" : "See More"}
                   </span>
                 )}
               </div>
@@ -331,29 +398,52 @@ export const PrivilegeListManager = () => {
                 </div>
               </div>
 
-              {/* Privilege Sets */}
-              <div>
-                <div style={{ fontWeight: 700, fontSize: 13, color: "#333", marginBottom: 4 }}>
-                  Privilege Sets ({privileges.length})
-                </div>
-                <div style={{ fontSize: 11, color: "#888", marginBottom: 10 }}>
-                  By Department - Service Area
-                </div>
-                {departments.map(dept => (
-                  <div key={dept.id} style={{
-                    padding: "8px 12px",
-                    background: "#f5f6fa",
-                    borderRadius: 6,
-                    marginBottom: 6,
-                    fontSize: 13,
-                    color: "#333",
-                    cursor: "pointer",
-                  }}
-                    onClick={() => setFilterDept(filterDept === dept.id ? "" : dept.id)}
-                  >
-                    {dept?.departmentName?.name || dept?.name}
+              {/* Privilege Sets — separate bordered box matching demo */}
+              <div style={{
+                border: "1px solid #dee2e6",
+                borderRadius: 8,
+                overflow: "hidden",
+              }}>
+                <div style={{ padding: "10px 14px", borderBottom: "1px solid #dee2e6" }}>
+                  <div style={{ fontWeight: 700, fontSize: 13, color: "#333" }}>
+                    Privilege Sets ({privileges.length})
                   </div>
-                ))}
+                  <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
+                    By Department - Service Area
+                  </div>
+                </div>
+                <div style={{ maxHeight: 180, overflowY: "auto" }}>
+                  {departments.length === 0 ? (
+                    <div style={{ padding: "9px 14px", fontSize: 12, color: "#888" }}>
+                      No departments found
+                    </div>
+                  ) : departments.map((dept, idx) => {
+                    const count = privileges.filter(p => {
+                      const depts = p?.departmentServiceAreas || p?.departments || [];
+                      return depts.some(d => (d?.id || d?.department?.id) === dept.id);
+                    }).length;
+                    return (
+                      <div key={dept.id}
+                        onClick={() => setFilterDept(filterDept === dept.id ? "" : dept.id)}
+                        style={{
+                          padding: "8px 14px",
+                          background: filterDept === dept.id ? "#e8f4f7" : idx % 2 === 0 ? "#fff" : "#fafafa",
+                          borderBottom: "1px solid #f0f0f0",
+                          fontSize: 12, cursor: "pointer", display: "flex",
+                          justifyContent: "space-between", alignItems: "center",
+                          color: filterDept === dept.id ? "#06617A" : "#333",
+                          fontWeight: filterDept === dept.id ? 600 : 400,
+                        }}
+                      >
+                        <span>{dept?.name || "—"}</span>
+                        {count > 0 && (
+                          <span style={{ fontSize: 11, color: "#06617A", background: "#e8f4f7",
+                            borderRadius: 10, padding: "1px 6px" }}>{count}</span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
@@ -368,22 +458,56 @@ export const PrivilegeListManager = () => {
               display: "flex",
               flexDirection: "column",
               /* Whole right panel height-bounded so inner table scrolls */
-              maxHeight: "calc(100vh - 180px)",
+              maxHeight: "calc(100vh - 140px)",
               overflow: "hidden",
             }}>
 
               {/* ── Top action buttons (BULK UPLOAD / ADD NEW) ── */}
               <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginBottom: 14, flexShrink: 0 }}>
                 <button
-                  onClick={() => document.getElementById("priv-bulk-input").click()}
+                  onClick={() => bulkInputRef.current?.click()}
+                  disabled={isBulkUploading}
                   style={{
                     background: "#fff", border: "2px solid #06617A", color: "#06617A",
                     borderRadius: 6, padding: "7px 18px", fontSize: 13, fontWeight: 700,
-                    cursor: "pointer", letterSpacing: "0.5px",
+                    cursor: isBulkUploading ? "not-allowed" : "pointer",
+                    letterSpacing: "0.5px", opacity: isBulkUploading ? 0.7 : 1,
                   }}
-                >BULK UPLOAD</button>
-                <input id="priv-bulk-input" type="file" multiple accept=".csv,.xlsx,.xls"
-                  style={{ display: "none" }} onChange={() => {}} />
+                >{isBulkUploading ? "UPLOADING..." : "BULK UPLOAD"}</button>
+                <input
+                  ref={bulkInputRef}
+                  type="file"
+                  accept=".csv,.xlsx,.xls"
+                  style={{ display: "none" }}
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setIsBulkUploading(true);
+                    try {
+                      const fd = new FormData();
+                      fd.append("file", file);
+                      // POST to privilegeMaster bulk upload endpoint
+                      const res = await fetch(
+                        `${process.env.REACT_APP_BASE_URL || ""}/entity-service/privilegeMaster/bulk`,
+                        { method: "POST", body: fd,
+                          headers: { Authorization: `Bearer ${sessionStorage.getItem("token") || localStorage.getItem("token") || ""}` }
+                        }
+                      );
+                      if (res.ok) {
+                        SuccessToaster("Bulk upload successful! Refreshing...");
+                        setTimeout(() => fetchPrivileges(), 1500);
+                      } else {
+                        const err = await res.json().catch(() => ({}));
+                        ErrorToaster(err?.message || `Upload failed (${res.status}). Check file format.`);
+                      }
+                    } catch (err) {
+                      ErrorToaster(err?.message || "Upload failed. Please try again.");
+                    } finally {
+                      setIsBulkUploading(false);
+                      e.target.value = "";
+                    }
+                  }}
+                />
                 <button
                   onClick={openAdd}
                   style={{
@@ -442,46 +566,82 @@ export const PrivilegeListManager = () => {
                   </button>
                 ))}
                 <div style={{ marginLeft: "auto", display: "flex", gap: 12, alignItems: "center" }}>
-                  <span style={{ cursor: "pointer", color: "#555", fontSize: 18 }} title="Search">&#128269;</span>
-                  <span style={{ cursor: "pointer", color: "#555", fontSize: 18 }} title="Print">&#128438;</span>
+                  {showSearch && (
+                    <input
+                      autoFocus
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      placeholder="Search by ID or title..."
+                      style={{
+                        border: "1px solid #06617A", borderRadius: 4,
+                        padding: "4px 10px", fontSize: 12, width: 200, outline: "none",
+                      }}
+                      onKeyDown={e => { if (e.key === "Escape") { setShowSearch(false); setSearchQuery(""); }}}
+                    />
+                  )}
+                  <span
+                    title={showSearch ? "Close search" : "Search privileges"}
+                    onClick={() => { setShowSearch(p => !p); if (showSearch) setSearchQuery(""); }}
+                    style={{ cursor: "pointer", color: showSearch ? "#06617A" : "#555", fontSize: 18, fontWeight: showSearch ? 700 : 400 }}
+                  >&#128269;</span>
+                  <span
+                    title="Print table"
+                    onClick={() => window.print()}
+                    style={{ cursor: "pointer", color: "#555", fontSize: 18 }}
+                  >&#128438;</span>
                 </div>
               </div>
 
               {/* ── Table wrapper — THIS is the scroll container ── */}
               <div style={{
-                flex: 1,                    /* takes remaining height in the flex column */
-                overflowY: "auto",          /* only the table scrolls vertically */
-                overflowX: "auto",          /* horizontal scroll if table is wide */
+                flex: 1,
+                overflowY: "auto",
+                overflowX: "auto",
                 border: "1px solid #dee2e6",
                 borderRadius: 6,
-                /* Custom scrollbar styling */
+                minHeight: 420,    /* ensures at least 8 rows visible before scroll */
                 scrollbarWidth: "thin",
                 scrollbarColor: "#06617A #f0f0f0",
               }}>
 
                 {/* Pagination row — sticky at top of scroll area */}
-                <div style={{
-                  display: "flex", justifyContent: "flex-end", alignItems: "center",
-                  padding: "5px 12px", background: "#fafafa",
-                  borderBottom: "1px solid #dee2e6",
-                  fontSize: 11, color: "#888", gap: 16,
-                  position: "sticky", top: 0, zIndex: 2,
-                }}>
-                  <span>Page 1-{Math.max(1, displayRows.length)} of {displayRows.length}</span>
-                  <span>Display All ▼&nbsp;Rows</span>
-                  <span style={{ cursor: "pointer", padding: "0 4px" }}>&lt;</span>
-                  <span style={{ cursor: "pointer", padding: "0 4px" }}>&gt;</span>
-                </div>
+                {(() => {
+                  const totalPages = Math.max(1, Math.ceil(displayRows.length / ROWS_PER_PAGE));
+                  const startRow = (currentPage - 1) * ROWS_PER_PAGE + 1;
+                  const endRow = Math.min(currentPage * ROWS_PER_PAGE, displayRows.length);
+                  return (
+                    <div style={{
+                      display: "flex", justifyContent: "flex-end", alignItems: "center",
+                      padding: "5px 12px", background: "#fafafa",
+                      borderBottom: "1px solid #dee2e6",
+                      fontSize: 11, color: "#888", gap: 16,
+                      position: "sticky", top: 0, zIndex: 2,
+                    }}>
+                      <span>Page {displayRows.length === 0 ? 0 : startRow}-{endRow} of {displayRows.length}</span>
+                      <span>Display All ▼&nbsp;Rows</span>
+                      <span
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        style={{ cursor: currentPage > 1 ? "pointer" : "default", padding: "0 4px",
+                          color: currentPage > 1 ? "#06617A" : "#ccc", fontWeight: 700 }}
+                      >&lt;</span>
+                      <span
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        style={{ cursor: currentPage < totalPages ? "pointer" : "default", padding: "0 4px",
+                          color: currentPage < totalPages ? "#06617A" : "#ccc", fontWeight: 700 }}
+                      >&gt;</span>
+                    </div>
+                  );
+                })()}
 
                 <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 700 }}>
                   <thead>
                     <tr style={{ background: "#f5f6fa" }}>
                       {TABLE_HEAD.map((h, i) => (
                         <th key={i} style={{
-                          padding: "10px 12px", textAlign: "left",
+                          padding: "10px 12px",
+                          textAlign: h === "PRIVILEGE TITLE" ? "center" : "left",
                           fontSize: 11, fontWeight: 700, color: "#52575d",
                           borderBottom: "1px solid #dee2e6", whiteSpace: "nowrap",
-                          /* Sticky header inside the scroll container */
                           position: "sticky", top: 37, background: "#f5f6fa", zIndex: 1,
                         }}>{h}</th>
                       ))}
@@ -502,7 +662,9 @@ export const PrivilegeListManager = () => {
                           No privileges found. Click <strong>ADD NEW</strong> to create one.
                         </td>
                       </tr>
-                    ) : displayRows.map((row, idx) => (
+                    ) : displayRows
+                      .slice((currentPage - 1) * ROWS_PER_PAGE, currentPage * ROWS_PER_PAGE)
+                      .map((row, idx) => (
                       <tr key={row.id || idx}
                         style={{ background: idx % 2 === 0 ? "#fff" : "#fafafa", transition: "background 0.15s" }}
                         onMouseEnter={e => e.currentTarget.style.background = "#f0f9fb"}

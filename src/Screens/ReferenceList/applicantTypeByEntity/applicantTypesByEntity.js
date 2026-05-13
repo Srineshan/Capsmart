@@ -44,11 +44,11 @@ const getItemName = (item) =>
   item?.name              || "";
 
 const getCategory = (item) => {
-  // applicantTypeMaster uses siteType.type as category
-  const cat = item?.siteType || item?.category;
+  // Prefer category over siteType — siteType is a site name, not a staff category
+  const cat = item?.category || item?.siteType;
   if (!cat) return "";
   if (typeof cat === "string") return cat;
-  if (typeof cat === "object") return cat?.type || cat?.category || cat?.name || cat?.categoryName || "";
+  if (typeof cat === "object") return cat?.category || cat?.name || cat?.categoryName || cat?.type || "";
   return "";
 };
 

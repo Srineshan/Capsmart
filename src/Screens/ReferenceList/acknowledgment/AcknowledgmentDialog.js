@@ -74,6 +74,8 @@ const AcknowledgmentDialog = ({
   const [followUpRequired, setFollowUpRequired]             = useState(false);
   const [isSubmitting, setIsSubmitting]                     = useState(false);
   const [titleError, setTitleError]                         = useState(false);
+  // contentType tracks the enum: "Text" | "Document" | "Image"
+  const [contentType, setContentType]                       = useState("Text");
 
   // Multi-file upload
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -111,6 +113,7 @@ const AcknowledgmentDialog = ({
       setSignatureRequired(selectedAcknowledgement?.esignatureRequiredOnEachPage || false);
       setFollowUpRequired(selectedAcknowledgement?.followUpTaskRequired          || false);
       setUploadedFiles([]);
+      setContentType(selectedAcknowledgement?.contentType || "Text");
       if (selectedAcknowledgement?.country) {
         const saved = COUNTRY_LIST.find(
           (c) => c.code === selectedAcknowledgement.country?.code || c.name === selectedAcknowledgement.country?.name
@@ -142,6 +145,7 @@ const AcknowledgmentDialog = ({
     setFollowUpRequired(false);
     setUploadedFiles([]);
     setTitleError(false);
+    setContentType("Text");
     setSelectedCountry(COUNTRY_LIST[0]);
     setCountryDropdownOpen(false);
   };
@@ -210,9 +214,10 @@ const AcknowledgmentDialog = ({
   };
 
   // CommonDropZone feeds into the same multi-file system
-  const changeHandler = async (files) => {
+  const changeHandler = async (files, uploadedAs = "Document") => {
     const fileObj = Array.isArray(files) ? files[0] : files?.[0];
     if (!fileObj) return;
+    setContentType(uploadedAs);
     await handleBulkUpload([fileObj]);
   };
 
@@ -234,20 +239,22 @@ const AcknowledgmentDialog = ({
     if (!validate()) return;
     setIsSubmitting(true);
 
+    // Determine effective contentType: if files uploaded, prefer their type; else keep state value
     const successfulFiles = uploadedFiles.filter((f) => f.status === "done").map((f) => f.data);
+    // Schema has a single `file` field (filePath, fileName, fileURL) — use the first successful upload
+    const filePayload = successfulFiles.length > 0 ? successfulFiles[0] : undefined;
+    // If a file was uploaded, resolve contentType from upload; if only text entered keep "Text"
+    const resolvedContentType = filePayload ? contentType : "Text";
 
     const payload = {
       applicantTypes:               selectedApplicantTypes,
       title:                        title.trim(),
       content:                      { content },
-      contentType:                  "Text",
+      contentType:                  resolvedContentType,          // Enum: Document | Image | Text
       disclaimer:                   { content: disclaimer },
       einitialRequiredOnEachPage:   eInitialRequired,
       esignatureRequiredOnEachPage: signatureRequired,
-      followUpTaskRequired:         followUpRequired,
-      country: { code: selectedCountry.code, name: selectedCountry.name, label: selectedCountry.label },
-      ...(successfulFiles.length > 1  ? { files: successfulFiles }    : {}),
-      ...(successfulFiles.length === 1 ? { file: successfulFiles[0] } : {}),
+      ...(filePayload ? { file: filePayload } : {}),             // Single file per API schema
     };
 
     try {
@@ -420,12 +427,12 @@ const AcknowledgmentDialog = ({
             <CommonDropZone
               title={"Upload Your Documents"}
               description={"Upload your files or drag & drop from your cabinet"}
-              changeHandler={changeHandler}
+              changeHandler={(files) => changeHandler(files, "Document")}
             />
             <CommonDropZone
               title={"Upload A Photo"}
               description={"Click a picture with your Camera or upload from Gallery."}
-              changeHandler={changeHandler}
+              changeHandler={(files) => changeHandler(files, "Image")}
               accept="image/*"
             />
           </div>

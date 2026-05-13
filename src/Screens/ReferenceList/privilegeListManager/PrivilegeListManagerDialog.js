@@ -30,7 +30,6 @@ const COUNTRY_LIST = [
   { code: "nz", name: "NZ",        label: "New Zealand"    },
 ];
 
-// ── Privilege types matching Image 3 design ────────────────────────────────────
 const PRIVILEGE_TYPES = ["Core", "Restricted", "Non-Core"];
 
 // ── Component ──────────────────────────────────────────────────────────────────
@@ -47,25 +46,28 @@ const PrivilegeListManagerDialog = ({
   const [selectedCountry,      setSelectedCountry]      = useState(COUNTRY_LIST[0]);
   const [countryDropdownOpen,  setCountryDropdownOpen]  = useState(false);
 
-  // ── Form fields (matching Image 3) ─────────────────────────────────────────
-  // Privilege Type radio: Core | Restricted | Non-Core
+  // ── Form fields ────────────────────────────────────────────────────────────
   const [privilegeType,        setPrivilegeType]        = useState("Core");
-  // Applicant Type multiselect
   const [applicantTypeList,    setApplicantTypeList]    = useState([]);
   const [applicantTypeIds,     setApplicantTypeIds]     = useState([]);
   const [selectedApplicantTypes, setSelectedApplicantTypes] = useState([]);
-  // Privilege Status radio: Active | Retired
   const [privilegeStatus,      setPrivilegeStatus]      = useState("Active");
-  // Core Privilege fields
   const [privilegeId,          setPrivilegeId]          = useState("");
   const [privilegeTitle,       setPrivilegeTitle]       = useState("");
   const [privilegeDescription, setPrivilegeDescription] = useState("");
 
-  // Validation
-  const [idError,              setIdError]              = useState(false);
-  const [titleError,           setTitleError]           = useState(false);
+  // ── Extra fields for Restricted & Non-Core (from Swagger RestrictedPrivileges) ──
+  const [isevidenceRequired,             setIsevidenceRequired]             = useState(false);          // boolean
+  const [iscompetencyDisclosureRequired, setIscompetencyDisclosureRequired] = useState(false);          // boolean
+  const [responseType,                   setResponseType]                   = useState("YES_OR_NO");    // Enum: YES_OR_NO | PRIVILEGEREQUIRED_OR_PRIVILEGEREQUESTED
 
-  const [isSubmitting,         setIsSubmitting]         = useState(false);
+  // ── Validation ─────────────────────────────────────────────────────────────
+  const [idError,    setIdError]    = useState(false);
+  const [titleError, setTitleError] = useState(false);
+  const [isSubmitting,    setIsSubmitting]    = useState(false);
+  const [isBulkUploading, setIsBulkUploading] = useState(false);
+
+  const bulkInputRef = React.useRef(null);
 
   // ── Boot ───────────────────────────────────────────────────────────────────
   useEffect(() => { injectFlagIconsCSS(); }, []);
@@ -89,7 +91,6 @@ const PrivilegeListManagerDialog = ({
   useEffect(() => {
     if (!open) return;
     if (isEdit && selectedPrivilege) {
-      // Populate from existing record — API enums: CORE/RESTRICTED/NON_CORE, ACTIVE/RETIRED
       const rawType = (selectedPrivilege?.type || selectedPrivilege?.privilegeType || "CORE").toUpperCase();
       setPrivilegeType(
         rawType.includes("RESTRICTED") ? "Restricted" :
@@ -103,7 +104,11 @@ const PrivilegeListManagerDialog = ({
       setPrivilegeTitle(selectedPrivilege?.title || selectedPrivilege?.privilegeTitle || "");
       setPrivilegeDescription(selectedPrivilege?.description || selectedPrivilege?.privilegeDescription || "");
 
-      // API returns applicantType (singular key, array value)
+      // Populate extra fields from existing record
+      setIsevidenceRequired(!!selectedPrivilege?.isevidenceRequired);
+      setIscompetencyDisclosureRequired(!!selectedPrivilege?.iscompetencyDisclosureRequired);
+      setResponseType(selectedPrivilege?.responseType || "YES_OR_NO");
+
       const atList = selectedPrivilege?.applicantType || selectedPrivilege?.applicantTypes || [];
       const ids = atList.map(a => a?.id).filter(Boolean);
       setApplicantTypeIds(ids);
@@ -134,6 +139,9 @@ const PrivilegeListManagerDialog = ({
     setPrivilegeId("");
     setPrivilegeTitle("");
     setPrivilegeDescription("");
+    setIsevidenceRequired(false);
+    setIscompetencyDisclosureRequired(false);
+    setResponseType("YES_OR_NO");
     setApplicantTypeIds([]);
     setSelectedApplicantTypes([]);
     setSelectedCountry(COUNTRY_LIST[0]);
@@ -153,20 +161,17 @@ const PrivilegeListManagerDialog = ({
   // ── Validation ─────────────────────────────────────────────────────────────
   const validate = () => {
     let valid = true;
-    if (!privilegeId.trim()) { setIdError(true);    valid = false; }
+    if (!privilegeId.trim())    { setIdError(true);    valid = false; }
     if (!privilegeTitle.trim()) { setTitleError(true); valid = false; }
     if (!valid) ErrorToaster("Privilege ID and Title are required.");
     return valid;
   };
 
   // ── Save ────────────────────────────────────────────────────────────────────
-  // Uses POST /privilegeMaster (create) or PUT /privilegeMaster/{id} (update)
-  // as per Swagger privilege-master-controller (Images 5 & 6)
   const handleSave = async (isSaveAndExit) => {
     if (!validate()) return;
     setIsSubmitting(true);
 
-    // Backend enums (Java): PrivilegeType=[CORE, RESTRICTED, NON_CORE], status=[ACTIVE, RETIRED]
     const toTypeEnum = (val) => {
       const v = (val || "").toLowerCase();
       if (v.includes("restricted")) return "RESTRICTED";
@@ -175,9 +180,11 @@ const PrivilegeListManagerDialog = ({
     };
     const toStatusEnum = (val) => ((val || "").toUpperCase() === "RETIRED" ? "RETIRED" : "ACTIVE");
 
+    const isRestrictedOrNonCore = privilegeType === "Restricted" || privilegeType === "Non-Core";
+
     const payload = {
-      type:          toTypeEnum(privilegeType),        // Enum: CORE | RESTRICTED | NON_CORE
-      status:        toStatusEnum(privilegeStatus),    // Enum: ACTIVE | RETIRED
+      type:          toTypeEnum(privilegeType),
+      status:        toStatusEnum(privilegeStatus),
       privilegeId:   privilegeId.trim(),
       title:         privilegeTitle.trim(),
       description:   privilegeDescription.trim(),
@@ -187,6 +194,16 @@ const PrivilegeListManagerDialog = ({
         name:  selectedCountry.name,
         label: selectedCountry.label,
       },
+      // Only include for Restricted / Non-Core — matches Swagger schema
+      ...(isRestrictedOrNonCore && {
+        isevidenceRequired:             isevidenceRequired,
+        iscompetencyDisclosureRequired: iscompetencyDisclosureRequired,
+        // field name differs per type: responseType (Restricted) vs type (Non-Core)
+        ...(privilegeType === "Restricted"
+          ? { responseType: responseType }
+          : { type: responseType }
+        ),
+      }),
     };
 
     try {
@@ -213,12 +230,13 @@ const PrivilegeListManagerDialog = ({
 
   const handleCancel = () => { resetFields(); handleClose(false); };
 
-  // ── Section label based on privilege type ──────────────────────────────────
   const sectionLabel = () => {
     if (privilegeType === "Restricted") return "Restricted Privilege";
     if (privilegeType === "Non-Core")   return "Non-Core Privilege";
     return "Core Privilege";
   };
+
+  const isRestrictedOrNonCore = privilegeType === "Restricted" || privilegeType === "Non-Core";
 
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
@@ -298,10 +316,12 @@ const PrivilegeListManagerDialog = ({
 
         <div className={style.addHealthCareBoxStyle}>
 
-          {/* ── PRIVILEGE TYPE radio (Core | Restricted | Non-Core) ── */}
-          <div>
-            <div className={style.entityLableStyle}>PRIVILEGE TYPE *</div>
-            <div style={{ display: "flex", gap: 16, marginTop: 8, flexWrap: "wrap" }}>
+          {/* ── PRIVILEGE TYPE: label left, radios right (inline) ── */}
+          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+            <div className={style.entityLableStyle} style={{ margin: 0, whiteSpace: "nowrap" }}>
+              PRIVILEGE TYPE *
+            </div>
+            <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
               {PRIVILEGE_TYPES.map(type => (
                 <label key={type}
                   style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 14 }}>
@@ -358,10 +378,12 @@ const PrivilegeListManagerDialog = ({
             {sectionLabel()}
           </div>
 
-          {/* ── PRIVILEGE STATUS radio (Active | Retired) ── */}
-          <div className={style.marginTop20}>
-            <div className={style.entityLableStyle}>PRIVILEGE STATUS *</div>
-            <div style={{ display: "flex", gap: 24, marginTop: 8 }}>
+          {/* ── PRIVILEGE STATUS: label left, radios right (inline) ── */}
+          <div className={style.marginTop20} style={{ display: "flex", alignItems: "center", gap: 24 }}>
+            <div className={style.entityLableStyle} style={{ margin: 0, whiteSpace: "nowrap" }}>
+              PRIVILEGE STATUS *
+            </div>
+            <div style={{ display: "flex", gap: 24 }}>
               {["Active", "Retired"].map(status => (
                 <label key={status}
                   style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 14 }}>
@@ -441,19 +463,140 @@ const PrivilegeListManagerDialog = ({
             />
           </div>
 
+          {/* ── EXTRA FIELDS: Restricted & Non-Core only ── */}
+          {isRestrictedOrNonCore && (
+            <>
+              {/* responseType — Enum: YES_OR_NO | PRIVILEGEREQUIRED_OR_PRIVILEGEREQUESTED */}
+              <div className={style.marginTop20}>
+                <div className={style.entityLableStyle}>RESPONSE TYPE</div>
+                <div style={{ display: "flex", gap: 24, marginTop: 8, flexWrap: "wrap" }}>
+                  {[
+                    { value: "YES_OR_NO",                          label: "Yes or No" },
+                    { value: "PRIVILEGEREQUIRED_OR_PRIVILEGEREQUESTED", label: "Privilege Required / Requested" },
+                  ].map(opt => (
+                    <label key={opt.value}
+                      style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 14 }}>
+                      <input
+                        type="radio"
+                        name="responseType"
+                        value={opt.value}
+                        checked={responseType === opt.value}
+                        onChange={() => setResponseType(opt.value)}
+                        style={{ accentColor: "#06617A", width: 16, height: 16 }}
+                      />
+                      {opt.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* isevidenceRequired — boolean toggle */}
+              <div className={style.marginTop20}
+                style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ fontSize: 14, color: "#333" }}>Evidence of Qualification and Competency Required</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ fontSize: 13, color: "#888", minWidth: 24, textAlign: "right" }}>
+                    {isevidenceRequired ? "Yes" : "No"}
+                  </span>
+                  <div
+                    onClick={() => setIsevidenceRequired(p => !p)}
+                    style={{
+                      width: 36, height: 20, borderRadius: 10, cursor: "pointer",
+                      background: isevidenceRequired ? "#06617A" : "#ccc",
+                      position: "relative", transition: "background 0.2s", flexShrink: 0,
+                    }}
+                  >
+                    <div style={{
+                      position: "absolute", top: 2,
+                      left: isevidenceRequired ? 18 : 2,
+                      width: 16, height: 16, borderRadius: "50%",
+                      background: "#fff", transition: "left 0.2s",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.25)",
+                    }} />
+                  </div>
+                </div>
+              </div>
+
+              {/* iscompetencyDisclosureRequired — boolean toggle */}
+              <div className={style.marginTop20}
+                style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ fontSize: 14, color: "#333" }}>Competency Disclosure Required</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ fontSize: 13, color: "#888", minWidth: 24, textAlign: "right" }}>
+                    {iscompetencyDisclosureRequired ? "Yes" : "No"}
+                  </span>
+                  <div
+                    onClick={() => setIscompetencyDisclosureRequired(p => !p)}
+                    style={{
+                      width: 36, height: 20, borderRadius: 10, cursor: "pointer",
+                      background: iscompetencyDisclosureRequired ? "#06617A" : "#ccc",
+                      position: "relative", transition: "background 0.2s", flexShrink: 0,
+                    }}
+                  >
+                    <div style={{
+                      position: "absolute", top: 2,
+                      left: iscompetencyDisclosureRequired ? 18 : 2,
+                      width: 16, height: 16, borderRadius: "50%",
+                      background: "#fff", transition: "left 0.2s",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.25)",
+                    }} />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
         </div>
 
         {/* ── Footer ── */}
         <div className={style.marginTop20}>
           <div className={style.floatLeft}>
-            <input type="file" id="priv-bulk-dialog" multiple accept=".csv,.xlsx,.xls"
-              style={{ display: "none" }} onChange={() => {}} />
+            {/* Hidden file input — wired to bulkInputRef */}
+            <input
+              ref={bulkInputRef}
+              type="file"
+              accept=".csv,.xlsx,.xls"
+              style={{ display: "none" }}
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setIsBulkUploading(true);
+                try {
+                  const fd = new FormData();
+                  fd.append("file", file);
+                  // POST to same endpoint as main page bulk upload
+                  // Stored at: entity-service/privilegeMaster/bulk (backend DB, same as individual records)
+                  const res = await fetch(
+                    `${process.env.REACT_APP_BASE_URL || ""}/entity-service/privilegeMaster/bulk`,
+                    {
+                      method: "POST",
+                      body: fd,
+                      headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem("token") || localStorage.getItem("token") || ""}`,
+                      },
+                    }
+                  );
+                  if (res.ok) {
+                    SuccessToaster("Bulk upload successful!");
+                    handleClose(true); // close dialog and trigger list refresh
+                  } else {
+                    const err = await res.json().catch(() => ({}));
+                    ErrorToaster(err?.message || `Upload failed (${res.status}). Check file format.`);
+                  }
+                } catch (err) {
+                  ErrorToaster(err?.message || "Upload failed. Please try again.");
+                } finally {
+                  setIsBulkUploading(false);
+                  e.target.value = ""; // reset so same file can be re-selected
+                }
+              }}
+            />
             <button
               className={style.outlinedButton}
-              onClick={() => document.getElementById("priv-bulk-dialog").click()}
-              disabled={isSubmitting}
+              onClick={() => bulkInputRef.current?.click()}
+              disabled={isSubmitting || isBulkUploading}
             >
-              BULK UPLOAD
+              {isBulkUploading ? "UPLOADING..." : "BULK UPLOAD"}
             </button>
           </div>
 
@@ -461,14 +604,14 @@ const PrivilegeListManagerDialog = ({
             <button
               className={style.outlinedButton}
               onClick={() => handleSave(true)}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isBulkUploading}
             >
               {isSubmitting ? "SAVING..." : "SAVE & EXIT"}
             </button>
             <button
               className={`${style.buttonStyle} ${style.marginLeft20}`}
               onClick={() => handleSave(false)}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isBulkUploading}
             >
               {isSubmitting ? "SAVING..." : "SAVE & ADD MORE"}
             </button>

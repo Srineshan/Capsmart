@@ -28,9 +28,13 @@ const ApplicantTypeDialog = ({
   // ── Use parent-provided categories first, fallback to API fetch ──
   useEffect(() => {
     if (categoryList && categoryList.length > 0) {
-      // Parent already extracted categories from applicantTypeList — use directly
-      console.log("Using categories from parent:", categoryList);
-      setApplicantCategories(categoryList);
+      // Parent already extracted categories from applicantTypeList — merge, don't replace
+      // (preserves any category already injected by the edit-open effect above)
+      setApplicantCategories((prev) => {
+        const seen = new Set(categoryList.map((c) => c.id));
+        const extra = prev.filter((c) => !seen.has(c.id)); // keep injected entries not in parent list
+        return [...categoryList, ...extra];
+      });
     } else {
       // Parent had no categories yet — fetch independently
       fetchApplicantCategory();
@@ -41,13 +45,37 @@ const ApplicantTypeDialog = ({
   useEffect(() => {
     if (open) {
       if (isEdit && selectedApplicant) {
-        setSaveData({ ...selectedApplicant });
+        // ── Normalise category from both `category` and `siteType` fields ──
+        // Some records store category as { id, category } and others as siteType { id, type }
+        const rawCat  = selectedApplicant.category || selectedApplicant.siteType;
+        let normCategory = null;
+        if (rawCat) {
+          if (typeof rawCat === "string") {
+            normCategory = { id: rawCat, category: rawCat };
+          } else if (typeof rawCat === "object") {
+            const id    = rawCat.id || rawCat.category || rawCat.type || "";
+            const label = rawCat.category || rawCat.name || rawCat.type || rawCat.categoryName || "";
+            if (id && label) normCategory = { id, category: label };
+          }
+        }
+
+        setSaveData({ ...selectedApplicant, category: normCategory });
+
         // applicantType was normalised to array in parent — unwrap for input
         const typeValue = Array.isArray(selectedApplicant.applicantType)
           ? selectedApplicant.applicantType[0] || ""
           : selectedApplicant.applicantType || "";
         setEnterApplicant(typeValue);
         setDescription(selectedApplicant.description || "");
+
+        // Ensure the current category is in the dropdown even if parent list is missing it
+        if (normCategory?.id) {
+          setApplicantCategories((prev) => {
+            const already = prev.some((c) => c.id === normCategory.id);
+            if (already) return prev;
+            return [...prev, { id: normCategory.id, type: normCategory.category }];
+          });
+        }
       } else {
         resetDialogFields();
       }
@@ -211,9 +239,17 @@ const ApplicantTypeDialog = ({
           JSON.stringify(applicantType)
         );
         SuccessToaster("Applicant Type Updated Successfully");
+        // Build the updated item so parent can update the row in-place with fresh data
+        const updatedItem = {
+          ...selectedApplicant,
+          applicantType: enterApplicant.trim(),
+          description:   description.trim(),
+          category:      saveData.category || selectedApplicant.category || null,
+          lastModifiedDate: new Date().toISOString(),
+        };
         resetDialogFields();
         if (isSaveAndExit) {
-          handleClose(true, null); // null = edit, parent updates in place
+          handleClose(true, updatedItem); // pass updatedItem so parent can patch the row
         }
       }
     } catch (error) {

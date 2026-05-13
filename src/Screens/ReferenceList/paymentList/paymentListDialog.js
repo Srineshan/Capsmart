@@ -35,6 +35,7 @@ const PaymentListDialog = ({
   const applicationCreationTypes = [
     { id: "NEW", type: "Initial Appointment" },
     { id: "REAPPOINTMENT", type: "Reappointment" },
+    { id: "LOCUM_RENEWAL", type: "Locum Renewal" },
   ];
 
   useEffect(() => {
