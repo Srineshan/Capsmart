@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect, useRef } from "react";
 import Navbar from "../../../Components/Navbar";
 import style from "./../index.module.scss";
-import { GET, PUT } from "../../dataSaver";
+import { GET, PUT, DELETE } from "../../dataSaver";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
 import { SuccessToaster } from "../../../utils/toaster";
@@ -159,6 +159,18 @@ const Acknowledge = () => {
     if (needRefetch) getAcknowledgement();
   };
 
+  // DELETE /acknowledgementForm/{id}
+  const handleDeleteAcknowledgement = async (row) => {
+    if (!row?.id) return;
+    try {
+      await DELETE(`entity-service/acknowledgementForm/${row.id}`);
+      SuccessToaster("Acknowledgement Form deleted successfully.");
+      getAcknowledgement();
+    } catch (e) {
+      console.error("delete acknowledgementForm:", e);
+    }
+  };
+
   // ── Sidebar handlers ──────────────────────────────────────
   const handleTileSelect = () => {
     setIsDone(false);
@@ -219,14 +231,14 @@ const Acknowledge = () => {
             <LevelTwoHeader
               heading={"Acknowledgement Forms by Industries"}
               updatedTime={lastUpdatedDate ? `UPDATED ON ${lastUpdatedDate}` : ""}
-              path={"/Screens/ReferenceList/customerAdminDashboard"}
+              path={"/referencelist"}
               callingFrom={"Customer Admin"}
               needHeader={false}
               tileType={"Acknowedgement"}
               handleOpenDialog={openAddDialog}
               onAddClick={openAddDialog}
-              onCloseLevel2={() => handleCloseDialog(false)}
-              handleClose={() => handleCloseDialog(false)}
+              onCloseLevel2={() => { window.location.href = "/referencelist"; }}
+              handleClose={() => { window.location.href = "/referencelist"; }}
             />
           </div>
 
@@ -265,6 +277,7 @@ const Acknowledge = () => {
                   tileType={"Acknowedgement"}
                   groupFirstTwoColumn={true}
                   onEditClick={handleOpenEditDialog}
+                  onDeleteClick={handleDeleteAcknowledgement}
                   applicantId={applicantId}
                   refetchStaffPrivileges={getAcknowledgement}
                 />
@@ -278,26 +291,7 @@ const Acknowledge = () => {
                 </div>
               )}
 
-              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 20 }}>
-                <button
-                  onClick={handleMarkAsDone}
-                  disabled={!(isDone || hasRows)}
-                  style={{
-                    backgroundColor: "#06617A",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: 6,
-                    padding: "10px 24px",
-                    fontSize: 14,
-                    fontWeight: 600,
-                    cursor: (isDone || hasRows) ? "pointer" : "not-allowed",
-                    opacity: (isDone || hasRows) ? 1 : 0.6,
-                    letterSpacing: "0.5px",
-                  }}
-                >
-                  MARK AS DONE
-                </button>
-              </div>
+
             </div>
           </div>
         </div>

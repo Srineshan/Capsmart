@@ -59,7 +59,8 @@ const AddSuffixEntity = ({
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
 
   const saveSubmitHandler = async (type) => {
-    const isPresent = tableEntityData.find((p) => p.suffix === entityName);
+    // FIX 1: Skip duplicate check in edit mode to allow saving unchanged name
+    const isPresent = !isEdit && tableEntityData.find((p) => p.suffix === entityName);
     if (isPresent) {
       ErrorToaster("Already This Name Exists");
       document.getElementById("entityNameEl").focus();
@@ -92,32 +93,36 @@ const AddSuffixEntity = ({
       callingFrom === "Super Admin"
         ? "entity-service/nameSuffixMaster"
         : `entity-service/nameSuffix`;
+
     if (!isEdit) {
       await POST(ApiUrl, JSON.stringify(ApiData))
-        .then((response) => {
+        .then(() => {
           SuccessToaster("Event Added Successfully");
-          getEntityData();
+          // FIX 2: Removed duplicate getEntityData() call here; called once below
         })
         .catch((error) => {
           ErrorToaster(error);
         });
     } else {
       await PUT(`${ApiUrl}/${data?.id}`, JSON.stringify(ApiData))
-        .then((response) => {
+        .then(() => {
           SuccessToaster("Event Updated Successfully");
-          getEntityData();
+          // FIX 2: Removed duplicate getEntityData() call here; called once below
         })
         .catch((error) => {
           ErrorToaster(error);
         });
     }
+
     if (callingFrom === "Super Admin") {
       getIndustryData();
     }
+
     if (type !== "Add More") {
       getAddEntityDialog(false);
-      getEntityData();
+      getEntityData(); // FIX 2: Single call — refreshes list after close
     } else {
+      getEntityData(); // FIX 2: Single call — refreshes list after "Add More"
       setEntityName("");
       document.getElementById("entityNameEl").focus();
     }

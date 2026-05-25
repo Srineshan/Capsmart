@@ -4,14 +4,13 @@ import SideBar from "./../../Components/Sidebar";
 import style from "./index.module.scss";
 import { GET, DELETE, POST, TenantID } from "./../dataSaver";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
-import DeleteConfirmation from "../../Components/DeleteConfirmation";
 import EditHcRow from "./../../images/editHcRow.png";
 import DeleteHcFolder from "./../../images/deleteHcFolder.png";
 import AddSuffixEntity from "./addSuffixEntity";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
-// ── Country flag dropdown (same pattern as Department / ApplicantTypes) ───────
+// ── Country flag dropdown ─────────────────────────────────────────────────────
 const COUNTRY_LIST = [
   { code: "us", name: "USA",         label: "United States"  },
   { code: "gb", name: "UK",          label: "United Kingdom" },
@@ -41,7 +40,6 @@ const SuffixByCustomer = () => {
   const [addEditDialog, setAddEditDialog]   = useState(false);
   const [isEdit, setIsEdit]                 = useState(false);
   const [selectedTitle, setSelectedTitle]   = useState("HEALTHCARE");
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [masterNameSuffix, setMasterNameSuffix]   = useState([]);
   const [entityNameSuffix, setEntityNameSuffix]   = useState([]);
   const [selectedIndustry, setSelectedIndustry]   = useState();
@@ -150,7 +148,7 @@ const SuffixByCustomer = () => {
     }
   };
 
-  // ── DELETE from right panel ───────────────────────────────────────────────
+  // FIX: Delete directly on icon click — no confirmation dialog
   const handleDeleteSuffix = async (id) => {
     try {
       await DELETE(`entity-service/nameSuffix/${id}`);
@@ -263,7 +261,7 @@ const SuffixByCustomer = () => {
             {/* ── WHITE CARD ── */}
             <div style={{ background: "#fff", borderRadius: 8, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", overflow: "hidden" }}>
 
-              {/* Scrollbar style — teal thumb matching Department tile */}
+              {/* Scrollbar style */}
               <style>{`
                 .suffix-panel-scroll::-webkit-scrollbar { width: 6px; }
                 .suffix-panel-scroll::-webkit-scrollbar-track { background: #e8e8f0; border-radius: 3px; }
@@ -393,6 +391,7 @@ const SuffixByCustomer = () => {
                             style={{ width: 20, height: 20, objectFit: "contain", cursor: "pointer", opacity: 0.75 }}
                             onClick={() => { setIsEdit(true); setSelectedCustomerData(data); setAddEditDialog(true); }}
                           />
+                          {/* FIX: Delete directly without confirmation dialog */}
                           <img
                             src={DeleteHcFolder} alt="Delete"
                             style={{ width: 20, height: 20, objectFit: "contain", cursor: "pointer", opacity: 0.75 }}
@@ -421,12 +420,7 @@ const SuffixByCustomer = () => {
         <span style={{ fontSize: 12, color: "#9e9e9e" }}>© HapiCare</span>
       </div>
 
-      {showDeleteConfirmation && (
-        <DeleteConfirmation
-          confirmationText="Do you want to delete this Suffix?"
-        />
-      )}
-
+      {/* FIX 4: Pass getSuffixType as getIndustryData — correct refresh fn for Customer Admin */}
       {addEditDialog && (
         <AddSuffixEntity
           getAddEntityDialog={(v) => { setAddEditDialog(v); if (!v) setIsEdit(false); }}

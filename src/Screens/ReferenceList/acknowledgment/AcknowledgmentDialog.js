@@ -72,6 +72,7 @@ const AcknowledgmentDialog = ({
   const [eInitialRequired, setEInitialRequired]             = useState(false);
   const [signatureRequired, setSignatureRequired]           = useState(false);
   const [followUpRequired, setFollowUpRequired]             = useState(false);
+  const [signatureRequiredFrom, setSignatureRequiredFrom]   = useState("");
   const [isSubmitting, setIsSubmitting]                     = useState(false);
   const [titleError, setTitleError]                         = useState(false);
   // contentType tracks the enum: "Text" | "Document" | "Image"
@@ -111,7 +112,9 @@ const AcknowledgmentDialog = ({
       setDisclaimer(selectedAcknowledgement?.disclaimer?.content || "");
       setEInitialRequired(selectedAcknowledgement?.einitialRequiredOnEachPage   || false);
       setSignatureRequired(selectedAcknowledgement?.esignatureRequiredOnEachPage || false);
-      setFollowUpRequired(selectedAcknowledgement?.followUpTaskRequired          || false);
+      setFollowUpRequired(selectedAcknowledgement?.followUpTaskRequired              || false);
+      setSignatureRequiredFrom(selectedAcknowledgement?.signatureRequiredFrom        || "");
+
       setUploadedFiles([]);
       setContentType(selectedAcknowledgement?.contentType || "Text");
       if (selectedAcknowledgement?.country) {
@@ -143,6 +146,8 @@ const AcknowledgmentDialog = ({
     setEInitialRequired(false);
     setSignatureRequired(false);
     setFollowUpRequired(false);
+    setSignatureRequiredFrom("");
+
     setUploadedFiles([]);
     setTitleError(false);
     setContentType("Text");
@@ -246,15 +251,29 @@ const AcknowledgmentDialog = ({
     // If a file was uploaded, resolve contentType from upload; if only text entered keep "Text"
     const resolvedContentType = filePayload ? contentType : "Text";
 
+    // Map applicantTypes to API schema shape: [{ id, applicantType }]
+    const mappedApplicantTypes = selectedApplicantTypes.map((item) => ({
+      id:            item?.id || "",
+      applicantType: Array.isArray(item?.applicantType)
+        ? item.applicantType[0] || ""
+        : typeof item?.applicantType === "string"
+          ? item.applicantType
+          : "",
+    }));
+
     const payload = {
-      applicantTypes:               selectedApplicantTypes,
+      applicantTypes:               mappedApplicantTypes,          // [{ id, applicantType }] per schema
       title:                        title.trim(),
-      content:                      { content },
-      contentType:                  resolvedContentType,          // Enum: Document | Image | Text
-      disclaimer:                   { content: disclaimer },
-      einitialRequiredOnEachPage:   eInitialRequired,
-      esignatureRequiredOnEachPage: signatureRequired,
-      ...(filePayload ? { file: filePayload } : {}),             // Single file per API schema
+      content:                      { content },                   // Content { content: string }
+      contentType:                  resolvedContentType,           // Enum: Document | Image | Text
+      disclaimer:                   { content: disclaimer },       // Content { content: string }
+      einitialRequiredOnEachPage:   eInitialRequired,             // boolean
+      esignatureRequiredOnEachPage: signatureRequired,             // boolean
+      followUpTaskRequired:         followUpRequired,              // boolean
+      ...(followUpRequired && signatureRequiredFrom
+        ? { signatureRequiredFrom }                               // CEO | Practitioner | Admin
+        : {}),
+      ...(filePayload ? { file: filePayload } : {}),              // File { filePath, fileName, fileURL }
     };
 
     try {
@@ -450,7 +469,6 @@ const AcknowledgmentDialog = ({
           {[
             { label: "Applicant e-Initials required on each page", value: eInitialRequired, setter: setEInitialRequired },
             { label: "Applicant e-Signature With Date Required",    value: signatureRequired, setter: setSignatureRequired },
-            { label: "Follow Up Task Required",                      value: followUpRequired,  setter: setFollowUpRequired  },
           ].map(({ label, value, setter }) => (
             <div key={label} className={`${style.signatureGrid} ${style.marginTop20}`}>
               <div className={style.entityLableStyle}>{label}</div>
@@ -460,6 +478,44 @@ const AcknowledgmentDialog = ({
               />
             </div>
           ))}
+
+          {/* Follow Up Task Required — with inline "Select Signature Required From" dropdown when Yes */}
+          <div className={`${style.signatureGrid} ${style.marginTop20}`} style={{ alignItems: "center" }}>
+            <div className={style.entityLableStyle}>Follow Up Task Required</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={followUpRequired}
+                    onChange={(e) => {
+                      setFollowUpRequired(e.target.checked);
+                      if (!e.target.checked) setSignatureRequiredFrom("");
+                    }}
+                    className={classes.switch}
+                  />
+                }
+                className={style.switchFontStyle}
+                label={followUpRequired ? "Yes" : "No"}
+                labelPlacement="start"
+              />
+              {followUpRequired && (
+                <FormControl size="small" style={{ minWidth: 220 }}>
+                  <Select
+                    value={signatureRequiredFrom}
+                    onChange={(e) => setSignatureRequiredFrom(e.target.value)}
+                    displayEmpty
+                    renderValue={(v) =>
+                      v ? v : <span style={{ color: "#9e9e9e" }}>Select Signature Required From</span>
+                    }
+                  >
+                    <MenuItem value="CEO">CEO</MenuItem>
+                    <MenuItem value="Practitioner">Practitioner</MenuItem>
+                    <MenuItem value="Admin">Admin</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+            </div>
+          </div>
 
           {/* Uploaded files list */}
           {uploadedFiles.length > 0 && (

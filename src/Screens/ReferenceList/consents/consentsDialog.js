@@ -246,19 +246,17 @@ const ConsentsDialog = ({
     const selectedType = applicantTypeList.find((t) => t.id === selectedApplicantTypeId);
     const successfulFiles = uploadedFiles.filter((f) => f.status === "done").map((f) => f.data);
 
+    // Payload matches ConsentFormDTO schema exactly:
+    // applicantType: { id, applicantType }, title, content, alertNote, alertNoteRequired, esignatureRequired
     const payload = {
       applicantType: selectedType
         ? { id: selectedType.id, applicantType: getApplicantLabel(selectedType) }
         : undefined,
       title:              consentTitle.trim(),
-      content:            consentContent,
-      alertNote:          alertNoteText,
-      alertNoteRequired:  alertNoteRequired,
-      esignatureRequired: signatureRequired,
-      // Country saved with the form
-      country: { code: selectedCountry.code, name: selectedCountry.name, label: selectedCountry.label },
-      ...(successfulFiles.length > 1  ? { files: successfulFiles }      : {}),
-      ...(successfulFiles.length === 1 ? { file: successfulFiles[0] }   : {}),
+      content:            consentContent,       // string (plain)
+      alertNote:          alertNoteText,         // string (plain)
+      alertNoteRequired:  alertNoteRequired,     // boolean
+      esignatureRequired: signatureRequired,     // boolean
     };
 
     try {

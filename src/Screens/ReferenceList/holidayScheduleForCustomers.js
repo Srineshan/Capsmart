@@ -9,7 +9,6 @@ import AddHolidayType from "./addHolidayType";
 import { GET, DELETE, POST, TenantID } from "./../dataSaver";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import { format } from "date-fns";
-import DeleteConfirmation from "../../Components/DeleteConfirmation";
 import style from "./holiday.module.scss";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
@@ -42,13 +41,10 @@ const COUNTRY_LIST = [
 const HolidayScheduleForCustomers = () => {
   // ── Industries ─────────────────────────────────────────────
   const [industryList, setIndustryList]           = useState([]);
-  // ✅ activeIndustryIdx tracks which industry is expanded (−)
-  // null = all collapsed
   const [activeIndustryIdx, setActiveIndustryIdx] = useState(null);
   const [activeIndustry, setActiveIndustry]       = useState(null);
 
   // ── Per-industry year lists (keyed by industry id) ─────────
-  // ✅ Cache year lists so we don't re-fetch on every click
   const [yearCache, setYearCache] = useState({});
 
   // ── Selected year & country per industry ───────────────────
@@ -61,17 +57,15 @@ const HolidayScheduleForCustomers = () => {
   const [holidayData, setHolidayData] = useState([]);
 
   // ── Dialogs ────────────────────────────────────────────────
-  const [showAddDialog, setShowAddDialog]                   = useState(false);
-  const [showAddYearDialog, setShowAddYearDialog]           = useState(false);
-  const [isEdit, setIsEdit]                                 = useState(false);
-  const [selectedHoliday, setSelectedHoliday]               = useState({});
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [holidayId, setHolidayId]                           = useState("");
+  const [showAddDialog, setShowAddDialog]         = useState(false);
+  const [showAddYearDialog, setShowAddYearDialog] = useState(false);
+  const [isEdit, setIsEdit]                       = useState(false);
+  const [selectedHoliday, setSelectedHoliday]     = useState({});
 
   // ── Misc ───────────────────────────────────────────────────
-  const [lastUpdatedDate, setLastUpdatedDate]   = useState("");
-  const [isExpanded, setIsExpanded]             = useState(true);
-  const [headerCountry, setHeaderCountry]       = useState(COUNTRY_LIST[0]);
+  const [lastUpdatedDate, setLastUpdatedDate]     = useState("");
+  const [isExpanded, setIsExpanded]               = useState(true);
+  const [headerCountry, setHeaderCountry]         = useState(COUNTRY_LIST[0]);
   const [headerCountryOpen, setHeaderCountryOpen] = useState(false);
 
   // ── Boot ──────────────────────────────────────────────────
@@ -113,7 +107,6 @@ const HolidayScheduleForCustomers = () => {
       const { data } = await GET("entity-service/industryMaster");
       const list = data || [];
       setIndustryList(list);
-      // ✅ Auto-expand first industry on load
       if (list.length > 0) {
         setActiveIndustryIdx(0);
         setActiveIndustry(list[0]);
@@ -121,10 +114,8 @@ const HolidayScheduleForCustomers = () => {
     } catch (e) { console.error("industryMaster:", e); }
   };
 
-  // ✅ Fetch years using the CLICKED industry's own id — not entity's industryId
   const fetchYearsForIndustry = async (industryId) => {
     if (yearCache[industryId]) {
-      // Already fetched — restore from cache
       const cached = yearCache[industryId];
       if (cached.length > 0) setSelectedYear(cached[0]?.year);
       else setSelectedYear("");
@@ -132,7 +123,6 @@ const HolidayScheduleForCustomers = () => {
     }
     try {
       const { data } = await GET(`entity-service/yearMaster?industryId=${industryId}`);
-      // ✅ Deduplicate by year value — prevents duplicate entries like 2024 appearing twice
       const seen = new Set();
       const list = (data || []).filter((y) => {
         const key = String(y.year);
@@ -149,7 +139,6 @@ const HolidayScheduleForCustomers = () => {
     }
   };
 
-  // ✅ Fetch holiday master data for selected industry/year/country
   const fetchHolidayData = async () => {
     try {
       const { data } = await GET(
@@ -159,7 +148,7 @@ const HolidayScheduleForCustomers = () => {
     } catch (e) { console.error("holidayMaster:", e); setHolidayData([]); }
   };
 
-  // ── Delete holiday ─────────────────────────────────────────
+  // FIX: Delete directly on icon click — no confirmation dialog
   const handleDeleteHoliday = async (id) => {
     try {
       await DELETE(`entity-service/holidayMaster/${id}`);
@@ -168,20 +157,14 @@ const HolidayScheduleForCustomers = () => {
     } catch (err) { ErrorToaster(err?.message || "Failed to delete."); }
   };
 
-  const handleDelete              = (id) => { setHolidayId(id); setShowDeleteConfirmation(true); };
-  const getShowDeleteConfirmation = (v)  => setShowDeleteConfirmation(v);
-  const getDeleteConfirmation     = (v)  => { if (v) handleDeleteHoliday(holidayId); };
-
-  // ✅ Toggle industry expand/collapse
+  // Toggle industry expand/collapse
   const handleIndustryClick = (idx, industry) => {
     if (activeIndustryIdx === idx) {
-      // ✅ Clicking − collapses
       setActiveIndustryIdx(null);
       setActiveIndustry(null);
       setHolidayData([]);
       setSelectedYear("");
     } else {
-      // ✅ Clicking + expands
       setActiveIndustryIdx(idx);
       setActiveIndustry(industry);
       setYearOpen(false);
@@ -265,7 +248,6 @@ const HolidayScheduleForCustomers = () => {
 
             {/* WHITE CARD — industry sidebar + holiday table */}
             <div className={style.holCard}>
-              {/* ✅ Gap between the two panels via padding in holDemoGrid */}
               <div className={style.holDemoGrid}>
 
                 {/* ── LEFT: Industry sidebar ── */}
@@ -285,17 +267,15 @@ const HolidayScheduleForCustomers = () => {
                             alt=""
                             className={`${style.holFolderIconSm} ${isActive ? style.holFolderIconWhite : ""}`}
                           />
-                          {/* ✅ Industry name LEFT-aligned via flex */}
                           <span className={style.holIndustryName}>
                             {(industry?.industry || industry?.name || "").toUpperCase()}
                           </span>
-                          {/* ✅ + / − toggle button */}
                           <span className={`${style.holIndustryToggle} ${isActive ? style.holIndustryToggleActive : ""}`}>
                             {isActive ? "−" : "+"}
                           </span>
                         </div>
 
-                        {/* ✅ Expanded: Year + Country dropdowns — only shown when active */}
+                        {/* Expanded: Year + Country dropdowns */}
                         {isActive && (
                           <div className={style.holIndustryExpanded}>
 
@@ -410,7 +390,7 @@ const HolidayScheduleForCustomers = () => {
                         </button>
                       </div>
 
-                      {/* ✅ Sub-header: folder icon + country + year — matches XD demo */}
+                      {/* Sub-header: folder icon + country + year */}
                       <div className={style.holTableSubHeader}>
                         <img
                           src={IndustriesEntityFolder}
@@ -458,8 +438,9 @@ const HolidayScheduleForCustomers = () => {
                               <img src={EditHcRow} alt="Edit" className={style.holActionIcon}
                                 onClick={() => { setIsEdit(true); setSelectedHoliday(item); setShowAddDialog(true); }}
                               />
+                              {/* FIX: Delete directly without confirmation dialog */}
                               <img src={DeleteHcRow} alt="Delete" className={style.holActionIcon}
-                                onClick={() => handleDelete(item?.id)}
+                                onClick={() => handleDeleteHoliday(item?.id)}
                               />
                             </div>
                           </div>
@@ -480,7 +461,7 @@ const HolidayScheduleForCustomers = () => {
         </div>
       </div>
 
-      {/* ✅ Add/Edit holiday dialog — uses holidayMaster endpoint */}
+      {/* Add/Edit holiday dialog */}
       {showAddDialog && (
         <AddCompanyHoliday
           open={showAddDialog}
@@ -498,18 +479,17 @@ const HolidayScheduleForCustomers = () => {
         />
       )}
 
-      {/* Add Year dialog — pre-selects active industry, lets user add any year */}
+      {/* Add Year dialog */}
       {showAddYearDialog && (
         <AddHolidayType
           open={showAddYearDialog}
           preSelectedIndustryId={activeIndustry?.id || ""}
           getAddEntityDialog={(v) => {
             setShowAddYearDialog(v);
-            // Refresh year list for current industry after adding
             if (!v && activeIndustry) {
               setYearCache((prev) => {
                 const updated = { ...prev };
-                delete updated[activeIndustry.id]; // clear cache so it re-fetches
+                delete updated[activeIndustry.id];
                 return updated;
               });
               fetchYearsForIndustry(activeIndustry.id);
@@ -529,13 +509,6 @@ const HolidayScheduleForCustomers = () => {
         />
       )}
 
-      {showDeleteConfirmation && (
-        <DeleteConfirmation
-          getShowDeleteConfirmation={getShowDeleteConfirmation}
-          getDeleteConfirmation={getDeleteConfirmation}
-          confirmationText="Do you want to delete this holiday?"
-        />
-      )}
     </Fragment>
   );
 };

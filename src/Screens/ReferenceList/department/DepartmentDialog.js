@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, Classes, Icon, Intent } from "@blueprintjs/core";
-import { TextField } from "@mui/material";
+import { TextField, Switch, FormControlLabel } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
@@ -20,10 +20,16 @@ const DepartmentDialog = ({
   const [departName, setDepartName]         = useState("");
   const [aliasName1, setAliasName1]         = useState("");
   const [aliasName2, setAliasName2]         = useState("");
-  const [serviceAreas, setServiceAreas]     = useState([
-    { name: "", aliasName1: "", aliasName2: "" },
+
+  // Department-level regional call responsibility
+  const [regionalCallApplicable, setRegionalCallApplicable] = useState(false);
+
+  // Each service area: { name, aliasName1, aliasName2, regionalCallApplicable }
+  const [serviceAreas, setServiceAreas] = useState([
+    { name: "", aliasName1: "", aliasName2: "", regionalCallApplicable: false },
   ]);
-  const [isSubmitting, setIsSubmitting]     = useState(false);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Load sites on mount
   useEffect(() => { fetchSites(); }, []);
@@ -48,14 +54,20 @@ const DepartmentDialog = ({
       );
       setAliasName1(selectedApplicant?.aliasName1 || "");
       setAliasName2(selectedApplicant?.aliasName2 || "");
+      setRegionalCallApplicable(
+        selectedApplicant?.regionalCallResponsibilitiesApplicable === true
+      );
+
       const areas = selectedApplicant?.serviceAreas?.length > 0
         ? selectedApplicant.serviceAreas.map((a) => ({
-            name: a?.name || a?.serviceName || "",
-            aliasName1: a?.aliasName1 || "",
-            aliasName2: a?.aliasName2 || "",
+            name:                     a?.name || a?.serviceName || "",
+            aliasName1:               a?.aliasName1 || "",
+            aliasName2:               a?.aliasName2 || "",
+            regionalCallApplicable:   a?.regionalCallResponsibilitiesApplicable === true,
           }))
-        : [{ name: "", aliasName1: "", aliasName2: "" }];
+        : [{ name: "", aliasName1: "", aliasName2: "", regionalCallApplicable: false }];
       setServiceAreas(areas);
+
       const sid =
         selectedApplicant?.siteTypeId?.id ||
         selectedApplicant?.siteId?.id     ||
@@ -71,7 +83,8 @@ const DepartmentDialog = ({
     setDepartName("");
     setAliasName1("");
     setAliasName2("");
-    setServiceAreas([{ name: "", aliasName1: "", aliasName2: "" }]);
+    setRegionalCallApplicable(false);
+    setServiceAreas([{ name: "", aliasName1: "", aliasName2: "", regionalCallApplicable: false }]);
   };
 
   const handleDialogClose = () => {
@@ -80,7 +93,10 @@ const DepartmentDialog = ({
   };
 
   const handleAddMore = () => {
-    setServiceAreas((prev) => [...prev, { name: "", aliasName1: "", aliasName2: "" }]);
+    setServiceAreas((prev) => [
+      ...prev,
+      { name: "", aliasName1: "", aliasName2: "", regionalCallApplicable: false },
+    ]);
   };
 
   const removeServiceArea = (index) => {
@@ -102,6 +118,27 @@ const DepartmentDialog = ({
     return site?.name || site?.type || site?.siteTypeName || "";
   };
 
+  // Build payload matching POST /department schema exactly
+  const buildPayload = () => ({
+    departmentName: { name: departName.trim() },
+    aliasName1:     aliasName1.trim(),
+    aliasName2:     aliasName2.trim(),
+    // Department-level regional call responsibilities (boolean per schema)
+    regionalCallResponsibilitiesApplicable: regionalCallApplicable,
+    serviceAreas: serviceAreas
+      .filter((a) => a.name.trim())
+      .map((a) => ({
+        name:       a.name.trim(),
+        aliasName1: a.aliasName1.trim(),
+        aliasName2: a.aliasName2.trim(),
+        // Service area level regional call responsibilities (boolean per schema)
+        regionalCallResponsibilitiesApplicable: a.regionalCallApplicable,
+      })),
+    siteTypeId: selectedSiteId ? { id: selectedSiteId } : undefined,
+    customized:  true,
+    active:      true,
+  });
+
   // isSaveAndExit = true  → SAVE & CLOSE
   // isSaveAndExit = false → SAVE & ADD MORE (stay open, clear fields)
   const SaveSubmitHandler = async (isSaveAndExit) => {
@@ -111,20 +148,7 @@ const DepartmentDialog = ({
     }
 
     setIsSubmitting(true);
-
-    const payload = {
-      departmentName: { name: departName.trim() },
-      aliasName1:     aliasName1.trim(),
-      aliasName2:     aliasName2.trim(),
-      serviceAreas:   serviceAreas
-        .filter((a) => a.name.trim())
-        .map((a) => ({
-          name:       a.name.trim(),
-          aliasName1: a.aliasName1.trim(),
-          aliasName2: a.aliasName2.trim(),
-        })),
-      siteTypeId: selectedSiteId ? { id: selectedSiteId } : undefined,
-    };
+    const payload = buildPayload();
 
     try {
       if (!isEdit) {
@@ -132,18 +156,17 @@ const DepartmentDialog = ({
         SuccessToaster("Department added successfully.");
 
         if (isSaveAndExit) {
-          // ✅ Pass new item back to parent so it can append to local state
-          // without reloading from API (which would bring back deleted items)
           const newItem = {
-            name:           departName.trim(),
-            departmentName: { name: departName.trim() },
-            aliasName1:     aliasName1.trim(),
-            aliasName2:     aliasName2.trim(),
-            serviceAreas:   payload.serviceAreas,
+            name:                                  departName.trim(),
+            departmentName:                        { name: departName.trim() },
+            aliasName1:                            aliasName1.trim(),
+            aliasName2:                            aliasName2.trim(),
+            regionalCallResponsibilitiesApplicable: regionalCallApplicable,
+            serviceAreas:                          payload.serviceAreas,
+            customized:                            true,
           };
           handleClose(true, newItem);
         } else {
-          // SAVE & ADD MORE — stay open, clear fields
           resetFormFields();
         }
       } else {
@@ -152,19 +175,14 @@ const DepartmentDialog = ({
         await PUT(`entity-service/department/${id}`, JSON.stringify([payload]));
         SuccessToaster("Department updated successfully.");
         if (isSaveAndExit) {
-          // ✅ FIX: Pass full updatedItem back to parent so it can update
-          // local state immediately with the new serviceAreas the user typed.
-          // Old: handleClose(true, null) → parent called loadCustomList()
-          //      → API returned no serviceAreas → edit dialog showed empty
-          // New: handleClose(true, updatedItem) → parent uses updatedItem
-          //      → serviceAreas shown correctly immediately ✅
           const updatedItem = {
-            ...selectedApplicant,               // keep id and all existing fields
-            name:           departName.trim(),
-            departmentName: { name: departName.trim() },
-            aliasName1:     aliasName1.trim(),
-            aliasName2:     aliasName2.trim(),
-            serviceAreas:   payload.serviceAreas, // ✅ what user just typed
+            ...selectedApplicant,
+            name:                                  departName.trim(),
+            departmentName:                        { name: departName.trim() },
+            aliasName1:                            aliasName1.trim(),
+            aliasName2:                            aliasName2.trim(),
+            regionalCallResponsibilitiesApplicable: regionalCallApplicable,
+            serviceAreas:                          payload.serviceAreas,
           };
           handleClose(true, updatedItem);
         } else {
@@ -192,6 +210,7 @@ const DepartmentDialog = ({
     >
       <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
 
+        {/* Header */}
         <div className={style.spaceBetween}>
           <p className={style.extensionStyle}>
             {isEdit ? "Edit Department / Service Area" : "Add Department / Service Area"}
@@ -255,6 +274,26 @@ const DepartmentDialog = ({
             </div>
           </div>
 
+          {/* Regional Call Responsibilities — department level */}
+          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+            <div className={style.entityLableStyle}>Regional Call Responsibilities</div>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={regionalCallApplicable}
+                  onChange={(e) => setRegionalCallApplicable(e.target.checked)}
+                  color="primary"
+                  size="small"
+                />
+              }
+              label={
+                <span style={{ fontSize: 13, color: regionalCallApplicable ? "#00695c" : "#757575" }}>
+                  {regionalCallApplicable ? "Applicable" : "Not Applicable"}
+                </span>
+              }
+            />
+          </div>
+
           <div className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`} />
 
           {/* Service Areas */}
@@ -275,6 +314,8 @@ const DepartmentDialog = ({
                   title="Remove"
                 >×</button>
               )}
+
+              {/* Service Area Name */}
               <div className={style.extentionGrid}>
                 <div className={style.entityLableStyle}>
                   Service Area Name {serviceAreas.length > 1 ? index + 1 : ""}
@@ -285,6 +326,8 @@ const DepartmentDialog = ({
                   fullWidth size="small"
                 />
               </div>
+
+              {/* Service Area Alias Names */}
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <div className={style.entityLableStyle}>Alias Name</div>
                 <div style={{ display: "flex", gap: 12 }}>
@@ -300,10 +343,33 @@ const DepartmentDialog = ({
                   />
                 </div>
               </div>
+
+              {/* Service Area Regional Call Responsibilities */}
+              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <div className={style.entityLableStyle}>Regional Call Responsibilities</div>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={area.regionalCallApplicable}
+                      onChange={(e) =>
+                        updateServiceArea(index, "regionalCallApplicable", e.target.checked)
+                      }
+                      color="primary"
+                      size="small"
+                    />
+                  }
+                  label={
+                    <span style={{ fontSize: 13, color: area.regionalCallApplicable ? "#00695c" : "#757575" }}>
+                      {area.regionalCallApplicable ? "Applicable" : "Not Applicable"}
+                    </span>
+                  }
+                />
+              </div>
             </div>
           ))}
         </div>
 
+        {/* Add More Service Area */}
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
           <div />
           <button className={style.outlinedButton} onClick={handleAddMore} disabled={isSubmitting}>
@@ -311,6 +377,7 @@ const DepartmentDialog = ({
           </button>
         </div>
 
+        {/* Save buttons */}
         <div className={`${style.floatRight} ${style.marginTop20}`}>
           <button
             className={style.outlinedButton}

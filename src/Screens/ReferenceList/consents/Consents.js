@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect, useRef } from "react";
 import Navbar from "../../../Components/Navbar";
 import style from "./../index.module.scss";
-import { GET, PUT } from "../../dataSaver";
+import { GET, PUT, DELETE } from "../../dataSaver";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
 import { SuccessToaster } from "../../../utils/toaster";
@@ -186,9 +186,21 @@ const Consents = () => {
     if (needRefetch) getConsentForms();
   };
 
+  // DELETE /consentForm/{id}
+  const handleDeleteConsentForm = async (row) => {
+    if (!row?.id) return;
+    try {
+      await DELETE(`entity-service/consentForm/${row.id}`);
+      SuccessToaster("Consent Form deleted successfully.");
+      getConsentForms();
+    } catch (e) {
+      console.error("delete consentForm:", e);
+    }
+  };
+
   // Passed to LevelTwoHeader — it calls this but we also intercept via DOM
   const handleOpenDialog = () => openAddDialog();
-  const handleCloseLevel2 = () => handleCloseDialog(false);
+  const handleCloseLevel2 = () => { window.location.href = "/referencelist"; };
 
   // ── Sidebar handlers ──────────────────────────────────────
   const handleTileSelect = (_siteId) => {
@@ -258,14 +270,14 @@ const Consents = () => {
             <LevelTwoHeader
               heading={"Consent Forms by Industries"}
               updatedTime={lastUpdatedDate ? `UPDATED ON ${lastUpdatedDate}` : ""}
-              path={"/Screens/ReferenceList/customerAdminDashboard"}
+              path={"/referencelist"}
               callingFrom={"Customer Admin"}
               needHeader={false}
               tileType={"Consent"}
               handleOpenDialog={handleOpenDialog}
               onAddClick={handleOpenDialog}
-              onCloseLevel2={handleCloseLevel2}
-              handleClose={handleCloseLevel2}
+              onCloseLevel2={() => { window.location.href = "/referencelist"; }}
+              handleClose={() => { window.location.href = "/referencelist"; }}
             />
           </div>
 
@@ -306,6 +318,7 @@ const Consents = () => {
                   tileType={"Consent"}
                   groupFirstTwoColumn={true}
                   onEditClick={handleOpenEditDialog}
+                  onDeleteClick={handleDeleteConsentForm}
                   applicantId={applicantId}
                   refetchStaffPrivileges={getConsentForms}
                 />
@@ -318,27 +331,6 @@ const Consents = () => {
                   </p>
                 </div>
               )}
-
-              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 20 }}>
-                <button
-                  onClick={handleMarkAsDone}
-                  disabled={!(isDone || hasRows)}
-                  style={{
-                    backgroundColor: "#06617A",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: 6,
-                    padding: "10px 24px",
-                    fontSize: 14,
-                    fontWeight: 600,
-                    cursor: (isDone || hasRows) ? "pointer" : "not-allowed",
-                    opacity: (isDone || hasRows) ? 1 : 0.6,
-                    letterSpacing: "0.5px",
-                  }}
-                >
-                  MARK AS DONE
-                </button>
-              </div>
             </div>
           </div>
         </div>

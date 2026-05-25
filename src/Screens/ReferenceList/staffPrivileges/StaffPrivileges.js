@@ -26,6 +26,7 @@ const StaffPrivileges = () => {
   const [isEdit,         setIsEdit]         = useState(false);
   const [editData,       setEditData]       = useState(null);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
+  const [openMenuId,     setOpenMenuId]     = useState(null);
 
   const COLS = [
     { head: "DEPARTMENT",          key: "departmentLabel",   width: "20%" },
@@ -119,36 +120,65 @@ const StaffPrivileges = () => {
     } catch (e) { console.error("[SP] sites:", e?.message); }
   };
 
+  // Fetches ALL pages from a paginated endpoint
+  const fetchAllPages = async (baseUrl) => {
+    const all = [];
+    let page = 0;
+    const size = 100; // fetch 100 per page
+    while (true) {
+      try {
+        const sep = baseUrl.includes("?") ? "&" : "?";
+        const res = await GET(`${baseUrl}${sep}page=${page}&size=${size}`);
+        const data = res?.data;
+
+        // Spring Boot paginated response shape: { content: [], totalPages, totalElements }
+        const items = data?.content || data?.data?.content || data?.data || res?.content ||
+          (Array.isArray(data) ? data : []);
+        const arr = Array.isArray(items) ? items : [];
+
+        if (arr.length === 0) break;
+        all.push(...arr);
+
+        // Check if there are more pages
+        const totalPages = data?.totalPages ?? data?.data?.totalPages ?? null;
+        const totalElements = data?.totalElements ?? data?.data?.totalElements ?? null;
+        if (totalPages !== null && page + 1 >= totalPages) break;
+        if (totalElements !== null && all.length >= totalElements) break;
+        if (arr.length < size) break; // got fewer than requested — last page
+        page++;
+      } catch (e) {
+        console.warn(`[SP] fetchAllPages page ${page}:`, e?.message);
+        break;
+      }
+    }
+    return all;
+  };
+
   const getPrivileges = async (siteId) => {
     if (!siteId) return;
     setIsLoading(true);
     let list = [];
 
-    // FIX: Try site-specific endpoint first
+    // Step 1: Fetch ALL records from the global endpoint (handles pagination)
+    // This ensures we get all 80+ records, not just the first page
     try {
-      const res = await GET(`entity-service/staffPrivilege/site/${siteId}`);
-      const raw = res?.data?.content || res?.data?.data || res?.data ||
-        res?.content || (Array.isArray(res) ? res : []);
-      list = Array.isArray(raw) ? raw : [];
-    } catch (e) { console.warn("[SP] site endpoint:", e?.message); }
+      list = await fetchAllPages("entity-service/staffPrivilege");
+      console.log("[SP] global total fetched:", list.length);
+    } catch (e) { console.warn("[SP] global fetch:", e?.message); }
 
-    // FIX: Always also try global endpoint and merge — ensures newly saved records
-    // (which may take time to index under a site) always appear.
-    // De-duplicate by id.
+    // Step 2: Also fetch site-specific records and merge
+    // (catches records that index correctly under the site)
     try {
-      const res = await GET("entity-service/staffPrivilege");
-      const raw = res?.data?.content || res?.data?.data || res?.data ||
-        res?.content || (Array.isArray(res) ? res : []);
-      const global = Array.isArray(raw) ? raw : [];
+      const siteList = await fetchAllPages(`entity-service/staffPrivilege/site/${siteId}`);
+      console.log("[SP] site total fetched:", siteList.length);
+      if (siteList.length > 0) {
+        const existingIds = new Set(list.map(r => r.id));
+        const newOnes = siteList.filter(r => r.id && !existingIds.has(r.id));
+        list = [...list, ...newOnes];
+      }
+    } catch (e) { console.warn("[SP] site fetch:", e?.message); }
 
-      // Merge: prefer site-specific records; add any global records not already present
-      const existingIds = new Set(list.map(r => r.id));
-      const merged = [
-        ...list,
-        ...global.filter(r => !existingIds.has(r.id)),
-      ];
-      list = merged.length > 0 ? merged : list;
-    } catch (e) { console.warn("[SP] global endpoint:", e?.message); }
+    console.log("[SP] total after merge:", list.length);
 
     // Refresh department map to resolve names for newly added records
     let freshDeptMap = { ...departmentMap };
@@ -278,12 +308,16 @@ const StaffPrivileges = () => {
   };
 
   const handleDelete = async (id) => {
+    if (!id) { ErrorToaster("Invalid record — cannot delete."); return; }
     try {
       await DELETE(`entity-service/staffPrivilege/${id}`);
       SuccessToaster("Deleted successfully");
+      // FIX: Remove from local list immediately so UI updates without waiting for refetch
+      setPrivilegeSets(prev => prev.filter(r => r.id !== id));
+      // Then trigger a full refetch to sync with backend
       setRefetchTrigger(n => n + 1);
     } catch (e) {
-      ErrorToaster("Delete failed");
+      ErrorToaster("Delete failed — " + (e?.response?.data?.message || e?.message || "please try again"));
       console.error("[SP] delete:", e?.message);
     }
   };
@@ -326,7 +360,8 @@ const StaffPrivileges = () => {
             needHeader={false}
             tileType="StaffPrivileges"
             onAddClick={handleOpenAdd}
-            onCloseLevel2={() => handleCloseDialog(false)}
+            // FIX: X button navigates back to the reference list dashboard
+            onCloseLevel2={() => { window.location.href = "/referencelist"; }}
           />
 
           <div className={style.bigCardGrid}>
@@ -371,7 +406,8 @@ const StaffPrivileges = () => {
                 </Typography>
               </div>
 
-              <div className={style.applicantTableContainer}>
+              <div className={style.applicantTableContainer}
+                onClick={() => setOpenMenuId(null)}>
                 {isLoading ? (
                   <div style={{ padding:40, textAlign:"center", color:"#888", fontSize:14 }}>
                     Loading privilege sets...
@@ -400,7 +436,7 @@ const StaffPrivileges = () => {
                             ))}
                           </th>
                         ))}
-                        <th style={{ width:"10%", padding:"8px 6px" }} />
+                        <th style={{ width:"6%", padding:"8px 6px" }} />
                       </tr>
                     </thead>
                     <tbody>
@@ -453,13 +489,61 @@ const StaffPrivileges = () => {
                                 )}
                               </td>
                             ))}
-                            <td className={style.actions}>
-                              <img src={EditHcFolder} alt="Edit"
-                                className={style.actionIcon}
-                                onClick={() => handleOpenEdit(row)} />
-                              <img src={DeleteHcFolder} alt="Delete"
-                                className={style.actionIcon}
-                                onClick={() => handleDelete(row.id)} />
+                            <td style={{ width:"6%", textAlign:"center", padding:"6px", position:"relative" }}>
+                              {/* Three-dot menu like XD demo */}
+                              <button
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  setOpenMenuId(openMenuId === row.id ? null : row.id);
+                                }}
+                                style={{
+                                  background: "none", border: "none",
+                                  cursor: "pointer", fontSize: 20,
+                                  color: "#555", padding: "2px 6px",
+                                  borderRadius: 4, lineHeight: 1,
+                                }}
+                                title="Options"
+                              >
+                                ···
+                              </button>
+                              {openMenuId === row.id && (
+                                <div
+                                  style={{
+                                    position: "absolute", right: 0, top: 32,
+                                    background: "#fff", border: "1px solid #dee2e6",
+                                    borderRadius: 6, zIndex: 999,
+                                    boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+                                    minWidth: 130, overflow: "hidden",
+                                  }}
+                                  onClick={e => e.stopPropagation()}
+                                >
+                                  <div
+                                    onClick={() => { setOpenMenuId(null); handleOpenEdit(row); }}
+                                    style={{
+                                      padding: "10px 16px", cursor: "pointer",
+                                      fontSize: 13, color: "#333",
+                                      display: "flex", alignItems: "center", gap: 8,
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = "#f0f4f8"}
+                                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                                  >
+                                    ✏️ Edit
+                                  </div>
+                                  <div style={{ height: 1, background: "#eee", margin: "0 8px" }} />
+                                  <div
+                                    onClick={() => { setOpenMenuId(null); handleDelete(row.id); }}
+                                    style={{
+                                      padding: "10px 16px", cursor: "pointer",
+                                      fontSize: 13, color: "#e53935",
+                                      display: "flex", alignItems: "center", gap: 8,
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = "#fdecea"}
+                                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                                  >
+                                    🗑️ Delete
+                                  </div>
+                                </div>
+                              )}
                             </td>
                           </tr>
                         ))
@@ -469,16 +553,7 @@ const StaffPrivileges = () => {
                 )}
               </div>
 
-              {/* Footer — SAVE IN-PROGRESS removed per request */}
-              <div style={{ display:"flex", justifyContent:"flex-end", marginTop:20 }}>
-                <button onClick={handleMarkAsDone}
-                  style={{ backgroundColor:"#06617A", color:"#fff",
-                    border:"none", borderRadius:6,
-                    padding:"10px 24px", fontSize:14, fontWeight:600,
-                    cursor:"pointer", letterSpacing:"0.5px" }}>
-                  MARK AS DONE
-                </button>
-              </div>
+              {/* Footer — buttons removed per request; navigation handled by LevelTwoHeader X */}
             </div>
           </div>
         </div>

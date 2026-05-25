@@ -158,7 +158,7 @@ const FunctionalTitleForCustomer = () => {
   const getContractedServiceProviderMaster = async () => {
     try {
       const { data } = await GET(
-        `entity-service/contractedServiceProviderMaster?siteTypeId=${siteTypeId}`
+        `entity-service/contractedServiceTypeMaster`
       );
       const list = data || [];
       setContractedServiceProviderMaster(list);
@@ -179,7 +179,7 @@ const FunctionalTitleForCustomer = () => {
   const getContractedServiceProvider = async () => {
     try {
       const { data } = await GET(
-        `entity-service/contractedServiceProvider?X-tenantID=${TenantID}&siteTypeId=${siteTypeId}`
+        `entity-service/contractedServiceType`
       );
       const list = data || [];
       setContractedServiceProvider(list);
@@ -660,9 +660,6 @@ const FunctionalTitleForCustomer = () => {
           getAddFunctionalTitlesDialog={getAddFunctionalTitlesDialog}
           siteTypeId={siteTypeId}
           isEdit={isEdit}
-          CSPTypeName={CSPTypeName}
-          CSPTypeId={CSPTypeId}
-          contractedServiceProviderMaster={contractedServiceProviderMaster}
           selectedFunctionalTitlesCSPTypeCustomer={selectedFunctionalTitlesCSPTypeCustomer}
           getFunctionalTitlesCustometData={loadFunctionalTitlesCustomDirect}
         />

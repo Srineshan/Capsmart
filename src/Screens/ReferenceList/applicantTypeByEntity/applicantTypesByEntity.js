@@ -626,15 +626,6 @@ const ApplicantTypesByEntity = () => {
                 </div>
               </div>
 
-              {/* ── FOOTER — SAVE removed: SELECT auto-saves immediately ── */}
-              <div className={style.deptFooter}>
-                <button
-                  className={`${style.deptSaveBtn} ${style.deptMarkDoneBtn}`}
-                  onClick={handleMarkAsDone}
-                >
-                  MARK AS DONE
-                </button>
-              </div>
 
             </div>
             {/* end white card */}

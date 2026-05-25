@@ -11,6 +11,29 @@ import Select from "@mui/material/Select";
 import WritingFile from "./../../../images/writing-file.svg";
 import Editor from "../common/Editor";
 
+// ── Flag icon CDN ─────────────────────────────────────────
+const injectFlagIconsCSS = () => {
+  if (document.getElementById("flag-icons-css")) return;
+  const link = document.createElement("link");
+  link.id   = "flag-icons-css";
+  link.rel  = "stylesheet";
+  link.href = "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css";
+  document.head.appendChild(link);
+};
+
+const COUNTRY_LIST = [
+  { code: "us", name: "USA",        label: "United States"        },
+  { code: "gb", name: "UK",         label: "United Kingdom"       },
+  { code: "ca", name: "Canada",     label: "Canada"               },
+  { code: "au", name: "Australia",  label: "Australia"            },
+  { code: "in", name: "India",      label: "India"                },
+  { code: "de", name: "Germany",    label: "Germany"              },
+  { code: "fr", name: "France",     label: "France"               },
+  { code: "sg", name: "Singapore",  label: "Singapore"            },
+  { code: "ae", name: "UAE",        label: "United Arab Emirates" },
+  { code: "nz", name: "NZ",         label: "New Zealand"          },
+];
+
 const useStyles = makeStyles({
   switch: {
     "& .Mui-checked":     { color: "#06617A" },
@@ -37,6 +60,8 @@ const StaffPrivilegeDialog = ({
   const [isFetchingSA,        setIsFetchingSA]        = useState(false);
   // Stores the full raw dept API object keyed by id — used to extract service areas
   const [deptRawMap,          setDeptRawMap]          = useState({});
+  // Stores dept name from the saved record for edit mode — used when dept list hasn't loaded yet
+  const [editDeptName,        setEditDeptName]        = useState("");
 
   const [departmentId,       setDepartmentId]       = useState("");
   const [serviceAreas,       setServiceAreas]       = useState([]);
@@ -65,9 +90,13 @@ const StaffPrivilegeDialog = ({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewOpen,  setPreviewOpen]  = useState(false);
+  // Country dropdown — top-left of dialog
+  const [selectedCountry,      setSelectedCountry]      = useState(COUNTRY_LIST[0]);
+  const [countryDropdownOpen,  setCountryDropdownOpen]  = useState(false);
 
   // ── Boot ─────────────────────────────────────────────────────────────────────
   useEffect(() => {
+    injectFlagIconsCSS();
     fetchApplicantTypes();
     fetchDepartments();
     fetchPrivilegeMaster();
@@ -79,14 +108,21 @@ const StaffPrivilegeDialog = ({
     else resetFields();
   }, [open, isEdit, selectedApplicant]);
 
-  // FIX: trigger service area fetch ONLY when department changes, not on every render
+  // Track whether the departmentId change came from the user selecting a dept
+  // (in which case we reset SAs) vs from populateFields in edit mode (don't reset)
+  const [deptChangedByUser, setDeptChangedByUser] = React.useState(false);
+
   useEffect(() => {
-    if (departmentId) {
+    if (!departmentId) { setServiceAreaOptions([]); return; }
+    if (deptChangedByUser) {
+      // User manually changed the department → reset selected SAs and fetch new options
       setServiceAreas([]);
       setServiceAreaOptions([]);
       fetchServiceAreasForDept(departmentId);
+      setDeptChangedByUser(false);
     } else {
-      setServiceAreaOptions([]);
+      // departmentId set by populateFields (edit mode) → just fetch options WITHOUT wiping selected SAs
+      fetchServiceAreasForDept(departmentId);
     }
   }, [departmentId]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -108,24 +144,22 @@ const StaffPrivilegeDialog = ({
 
   const fetchDepartments = async () => {
     try {
-      const res  = await GET("entity-service/department");
+      // Use GET /department/{siteId} — scoped to this hospital only
+      // Falls back to GET /department if siteId not available
+      const endpoint = currentSiteId
+        ? `entity-service/department/${currentSiteId}`
+        : "entity-service/department";
+      const res  = await GET(endpoint);
       const raw  = res?.data?.content || res?.data?.data || res?.data ||
         res?.content || (Array.isArray(res) ? res : []);
       const items = Array.isArray(raw) ? raw : [];
 
-      // Log the first item so we can see ALL available keys
-      if (items.length > 0) {
-        console.log("[Dept] First dept raw keys:", Object.keys(items[0]),
-          "serviceLocations count:", items[0]?.serviceLocations?.length ?? "n/a");
-      }
-
-      // Build id → full raw object map so SA lookup has access to everything
+      // Build id → full raw object map so SA lookup has access to serviceAreas
       const rawMap = {};
       items.forEach(item => { if (item?.id) rawMap[item.id] = item; });
       setDeptRawMap(rawMap);
 
-      // FIX: Deduplicate by BOTH id and name
-      // API returns one row per site×applicantType combo → many duplicates
+      // Deduplicate by id and name
       const seenIds   = new Set();
       const seenNames = new Set();
       const uniqueDepts = [];
@@ -135,6 +169,7 @@ const StaffPrivilegeDialog = ({
         const name =
           (typeof dn === "object" && dn !== null ? dn?.name || "" : "") ||
           (typeof dn === "string" ? dn : "") ||
+          item?.departmentGroupBy?.name ||
           (typeof item?.name === "string" ? item.name : "") ||
           "";
         const key = String(name).trim().toLowerCase();
@@ -205,6 +240,7 @@ const StaffPrivilegeDialog = ({
     setIsFetchingSA(true);
 
     // ── Primary: raw dept object stored during fetchDepartments ──────────────
+    // serviceAreas are embedded in the /department/{siteId} response directly
     const rawDept = deptRawMap[deptId];
     if (rawDept) {
       const sas = extractSAsFromDeptObj(rawDept);
@@ -215,9 +251,12 @@ const StaffPrivilegeDialog = ({
       }
     }
 
-    // ── Fallback 1: Re-fetch /department list and find this dept ─────────────
+    // ── Fallback: Re-fetch /department/{siteId} and find this dept ───────────
     try {
-      const res   = await GET("entity-service/department");
+      const endpoint = currentSiteId
+        ? `entity-service/department/${currentSiteId}`
+        : "entity-service/department";
+      const res   = await GET(endpoint);
       const raw   = res?.data?.content || res?.data?.data || res?.data ||
         res?.content || (Array.isArray(res) ? res : []);
       const items = Array.isArray(raw) ? raw : [];
@@ -297,20 +336,68 @@ const StaffPrivilegeDialog = ({
 
   // ── Populate / reset ──────────────────────────────────────────────────────────
   const populateFields = (rec) => {
-    setDepartmentId(rec?.department?.id || "");
-    const sas = Array.isArray(rec?.serviceArea) ? rec.serviceArea : [];
-    setServiceAreas(sas.map(s => ({ id: s.id || "", name: s.name || "" })));
+    const deptId = rec?.department?.id || "";
+    setDepartmentId(deptId);
+    // Store dept name so renderValue shows it even before departments list loads
+    const dn = rec?.department?.departmentName;
+    const deptNameVal =
+      (typeof dn === "object" && dn !== null ? dn?.name : "") ||
+      (typeof dn === "string" ? dn : "") ||
+      rec?.department?.name || "";
+    setEditDeptName(String(deptNameVal));
+
+    // FIX: Restore service areas from saved record directly (don't wait for fetch)
+    // The saved record already has serviceArea: [{ id, name }] per DTO
+    const sas = Array.isArray(rec?.serviceArea) ? rec.serviceArea :
+                Array.isArray(rec?.serviceAreas) ? rec.serviceAreas : [];
+    const normalizedSAs = sas.map(s => ({
+      id:   s?.id   || "",
+      name: s?.name || s?.serviceName || s?.serviceAreaName || "",
+    })).filter(s => s.id);
+    setServiceAreas(normalizedSAs);
+
+    // Pre-populate the serviceAreaOptions dropdown from the saved record
+    // so the selected values render correctly without waiting for the fetch
+    if (normalizedSAs.length > 0) {
+      setServiceAreaOptions(prev => {
+        const existingIds = new Set(prev.map(p => p.id));
+        const missing = normalizedSAs.filter(s => !existingIds.has(s.id));
+        return [...prev, ...missing];
+      });
+    }
     const apt = Array.isArray(rec?.applicantType)
       ? rec.applicantType[0] : rec?.applicantType;
     setApplicantTypeId(apt?.id || "");
-    setBodDate(rec?.bodApprovalDate || "");
+    // FIX: HTML date input needs YYYY-MM-DD format
+    // API may return "2026-05-06", "2026-05-06T00:00:00", "May 06, 2026" etc.
+    const rawBod = rec?.bodApprovalDate || rec?.bodDate || "";
+    let normalizedBod = "";
+    if (rawBod) {
+      try {
+        const d = new Date(rawBod);
+        if (!isNaN(d)) {
+          // Format as YYYY-MM-DD
+          const yr  = d.getFullYear();
+          const mo  = String(d.getMonth() + 1).padStart(2, "0");
+          const dy  = String(d.getDate()).padStart(2, "0");
+          normalizedBod = `${yr}-${mo}-${dy}`;
+        } else {
+          // Already in YYYY-MM-DD? Use as-is
+          normalizedBod = rawBod;
+        }
+      } catch { normalizedBod = rawBod; }
+    }
+    setBodDate(normalizedBod);
     setPrivilegeSetStatus(rec?.privilegeSetStatus === "NOT_IN_USE" ? "NOT_IN_USE" : "IN_USE");
     setPrivilegeSetTitle(rec?.privilegeSetTitle || "");
     setSpecType(rec?.privilegeSpecificationType || "DISCRETE");
     setRestrictedReq(rec?.restrictedPrivilegesRequired || false);
     setNonCoreReq(rec?.nonCorePrivilegesRequired || false);
     setProofDocReq(rec?.proofOfDocumentationRequired || false);
-    setGeneralInstruction(rec?.generalInstructionText || "");
+    // Restore generalInstructionText — may be at top level OR nested in corePrivileges
+    const gi = rec?.generalInstructionText ||
+      rec?.privilegeDetails?.corePrivileges?.generalInstructionText || "";
+    setGeneralInstruction(gi);
     setDescriptiveContent(rec?.descriptiveContent?.content || "");
 
     const flatRows = (cats) =>
@@ -359,6 +446,8 @@ const StaffPrivilegeDialog = ({
 
   const resetFields = () => {
     setDepartmentId("");
+    setEditDeptName("");
+    setDeptChangedByUser(false);
     setServiceAreas([]);
     setServiceAreaOptions([]);
     setApplicantTypeId("");
@@ -583,12 +672,60 @@ const StaffPrivilegeDialog = ({
       className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}>
       <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
 
-        <div className={style.spaceBetween}>
-          <p className={style.extensionStyle}>
+        <div className={style.spaceBetween} style={{ alignItems:"center" }}>
+          {/* LEFT: Country selector */}
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => setCountryDropdownOpen((prev) => !prev)}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                background: "#f5f6fa", border: "1px solid #dee2e6", borderRadius: 6,
+                padding: "5px 10px", cursor: "pointer", fontSize: 13, color: "#333", fontWeight: 500,
+              }}
+            >
+              <span className={`fi fi-${selectedCountry.code}`}
+                style={{ width: 20, height: 14, borderRadius: 2, display: "inline-block" }} />
+              <span>{selectedCountry.name}</span>
+              <span style={{ fontSize: 10, color: "#888", marginLeft: 2 }}>▼</span>
+            </button>
+
+            {countryDropdownOpen && (
+              <div style={{
+                position: "absolute", top: "calc(100% + 4px)", left: 0, zIndex: 9999,
+                background: "#fff", border: "1px solid #dee2e6", borderRadius: 8,
+                boxShadow: "0 4px 16px rgba(0,0,0,0.12)", minWidth: 180, overflow: "hidden",
+              }}>
+                {COUNTRY_LIST.map((country) => (
+                  <div
+                    key={country.code}
+                    onClick={() => { setSelectedCountry(country); setCountryDropdownOpen(false); }}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 10,
+                      padding: "9px 14px", cursor: "pointer", fontSize: 13, color: "#333",
+                      backgroundColor: selectedCountry.code === country.code ? "#f0f9fb" : "transparent",
+                      fontWeight: selectedCountry.code === country.code ? 600 : 400,
+                    }}
+                    onMouseEnter={(e) => { if (selectedCountry.code !== country.code) e.currentTarget.style.backgroundColor = "#f5f6fa"; }}
+                    onMouseLeave={(e) => { if (selectedCountry.code !== country.code) e.currentTarget.style.backgroundColor = "transparent"; }}
+                  >
+                    <span className={`fi fi-${country.code}`}
+                      style={{ width: 20, height: 14, borderRadius: 2, display: "inline-block", flexShrink: 0 }} />
+                    <span>{country.label}</span>
+                    {selectedCountry.code === country.code && (
+                      <span style={{ marginLeft: "auto", color: "#06617A", fontSize: 14 }}>✓</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <p className={style.extensionStyle} style={{ margin:0 }}>
             {isEdit
               ? "Edit Department / Service Area Specific Privileges Set"
               : "Create Department / Service Area Specific Privileges Sets"}
           </p>
+
           <div className={style.displayInRow}>
             <img src={WritingFile} className={style.dialogCrossStyle} alt="doc"
               style={{ marginRight: 40 }} />
@@ -596,6 +733,12 @@ const StaffPrivilegeDialog = ({
               className={style.dialogCrossStyle} onClick={handleCancel} />
           </div>
         </div>
+
+        {/* Close country dropdown on outside click */}
+        {countryDropdownOpen && (
+          <div style={{ position: "fixed", inset: 0, zIndex: 9998 }}
+            onClick={() => setCountryDropdownOpen(false)} />
+        )}
 
         <div className={style.ReferenceListEntityBorder} />
 
@@ -605,13 +748,17 @@ const StaffPrivilegeDialog = ({
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}
             className={style.marginTop20}>
             <div>
-              <div className={style.entityLableStyle}>DEPARTMENT / SERVICE AREA *</div>
+              <div className={style.entityLableStyle}>DEPARTMENT *</div>
               <FormControl fullWidth size="small">
-                <Select value={departmentId} onChange={e => setDepartmentId(e.target.value)}
+                <Select value={departmentId} onChange={e => {
+                    setDeptChangedByUser(true);
+                    setDepartmentId(e.target.value);
+                  }}
                   displayEmpty
                   renderValue={v => !v
                     ? <span style={{ color:"#9e9e9e" }}>Select Department</span>
-                    : departments.find(d => d.id === v)?.name || v}
+                    // FIX: Use name from departments list, fall back to editDeptName from saved record
+                    : departments.find(d => d.id === v)?.name || editDeptName || v}
                   SelectDisplayProps={{ style:{ paddingTop:5, paddingBottom:5, fontSize:14 } }}>
                   {departments.length === 0
                     ? <MenuItem disabled value="">Loading departments...</MenuItem>
@@ -623,7 +770,7 @@ const StaffPrivilegeDialog = ({
             </div>
 
             <div>
-              <div className={style.entityLableStyle}>SERVICE AREA</div>
+              <div className={style.entityLableStyle}>SPECIALITY</div>
               <FormControl fullWidth size="small">
                 <Select multiple
                   value={serviceAreas.map(s => s.id)}
@@ -636,21 +783,18 @@ const StaffPrivilegeDialog = ({
                     }));
                   }}
                   displayEmpty
-                  renderValue={sel =>
-                    !sel?.length
-                      ? <span style={{ color:"#9e9e9e" }}>
-                          {isFetchingSA ? "Loading..." :
-                           !departmentId ? "Select a department first" :
-                           serviceAreaOptions.length === 0 ? "No service areas found" :
-                           "Select service area"}
-                        </span>
-                      : serviceAreaOptions.filter(s => sel.includes(s.id))
-                          .map(s => s.name).join(", ")
+                  renderValue={() =>
+                    <span style={{ color:"#9e9e9e" }}>
+                      {isFetchingSA ? "Loading..." :
+                       !departmentId ? "Select a department first" :
+                       serviceAreaOptions.length === 0 ? "No service areas found" :
+                       "Select speciality"}
+                    </span>
                   }
                   disabled={!departmentId || isFetchingSA}
                   SelectDisplayProps={{ style:{ paddingTop:5, paddingBottom:5, fontSize:14 } }}>
                   {isFetchingSA ? (
-                    <MenuItem disabled>Loading service areas...</MenuItem>
+                    <MenuItem disabled>Loading...</MenuItem>
                   ) : serviceAreaOptions.length === 0 ? (
                     <MenuItem disabled value="">
                       {!departmentId
@@ -662,6 +806,50 @@ const StaffPrivilegeDialog = ({
                   ))}
                 </Select>
               </FormControl>
+
+              {/* Chips — selected specialities shown below the dropdown */}
+              {serviceAreas.length > 0 && (
+                <div style={{
+                  display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8,
+                }}>
+                  {serviceAreas.map((sa) => (
+                    <span key={sa.id} style={{
+                      display:        "inline-flex",
+                      alignItems:     "center",
+                      gap:            4,
+                      padding:        "3px 10px 3px 10px",
+                      background:     "#e8f4f7",
+                      border:         "1px solid #b2d8e3",
+                      borderRadius:   16,
+                      fontSize:       12,
+                      color:          "#06617A",
+                      fontWeight:     500,
+                      whiteSpace:     "nowrap",
+                    }}>
+                      {sa.name}
+                      <button
+                        onClick={() =>
+                          setServiceAreas(prev => prev.filter(s => s.id !== sa.id))
+                        }
+                        style={{
+                          background:  "none",
+                          border:      "none",
+                          cursor:      "pointer",
+                          padding:     0,
+                          marginLeft:  2,
+                          color:       "#06617A",
+                          fontSize:    14,
+                          lineHeight:  1,
+                          display:     "flex",
+                          alignItems:  "center",
+                        }}
+                        title={`Remove ${sa.name}`}
+                        type="button"
+                      >×</button>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -740,7 +928,7 @@ const StaffPrivilegeDialog = ({
           {/* General Instruction Text — ABOVE restricted/non-core toggles per XD demo */}
           <div className={style.marginTop20}>
             <div className={style.entityLableStyle}>GENERAL INSTRUCTION TEXT</div>
-            <Editor value={generalInstruction} onChange={setGeneralInstruction}
+            <Editor editorHtml={generalInstruction} onChange={setGeneralInstruction}
               placeholder="Enter General Instruction Here" />
           </div>
 

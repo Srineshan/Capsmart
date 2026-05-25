@@ -3,8 +3,6 @@ import Navbar from "../../../Components/Navbar";
 import style from "./../index.module.scss";
 import { GET, DELETE } from "../../dataSaver";
 import LevelTwoHeader from "../../../Components/LevelTwoHeader";
-import { formatInTimeZone } from "date-fns-tz";
-import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
 import Typography from "@mui/material/Typography";
 import PaymentListDialog from "./paymentListDialog";
 import DeleteHcFolder from "./../../../images/deleteHcFolder.png";
@@ -15,8 +13,8 @@ const PaymentList = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [entityId, setEntityId] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
 
-  // selectedPrivilegeCategory holds the full object { id, category }
   const [selectedPrivilegeCategory, setSelectedPrivilegeCategory] = useState(null);
   const [privilegeCategories, setPrivilegeCategories] = useState([]);
   const [paymentListData, setPaymentListData] = useState([]);
@@ -29,9 +27,7 @@ const PaymentList = () => {
   }, []);
 
   useEffect(() => {
-    if (entityId) {
-      getLastModifiedDate();
-    }
+    if (entityId) getLastModifiedDate();
   }, [entityId]);
 
   // Auto-select first category once categories load
@@ -52,11 +48,18 @@ const PaymentList = () => {
 
   const getLastModifiedDate = async () => {
     try {
-      const { data: lastModifiedDate } = await GET(
+      const { data } = await GET(
         `entity-service/referenceList/entity/${entityId}`
       );
-      const date = new Date(lastModifiedDate.departments?.lastModified);
-      // date is used internally if needed
+      // FIX: Use correct field for payment page — not departments.lastModified
+      const ts =
+        data?.paymentAndFeeDetails?.lastModified ||
+        data?.payment?.lastModified ||
+        data?.departments?.lastModified; // fallback
+      if (ts) {
+        const date = new Date(ts);
+        if (!isNaN(date)) setLastUpdatedDate(date.toLocaleDateString());
+      }
     } catch (error) {
       console.error("Error fetching last modified date:", error);
     }
@@ -65,7 +68,7 @@ const PaymentList = () => {
   const getPrivilegeCategories = async () => {
     try {
       const response = await GET("entity-service/privilege");
-      // Deduplicate by id — API sometimes returns repeated entries
+      // Deduplicate by id
       const seen = new Set();
       const cats = response.data
         .map((item) => ({ id: item.id, category: item.category }))
@@ -91,7 +94,6 @@ const PaymentList = () => {
 
   const handleCloseDialog = (needRefetch = false, keepOpen = false) => {
     if (keepOpen) {
-      // Save & Add More — refetch counts but keep dialog open with fresh form
       setEditData(null);
       setIsEdit(false);
       if (needRefetch) fetchPaymentListData();
@@ -110,20 +112,21 @@ const PaymentList = () => {
       fetchPaymentListData();
     } catch (error) {
       ErrorToaster("Failed to delete entry.");
-      console.log(error);
+      console.error(error);
     }
   };
 
   // Filter payment data by the currently selected privilege category
   const filteredPaymentData = selectedPrivilegeCategory
     ? paymentListData.filter(
-        (item) =>
-          item.privilegeCategory?.id === selectedPrivilegeCategory.id
+        (item) => item.privilegeCategory?.id === selectedPrivilegeCategory.id
       )
     : paymentListData;
 
+  // FIX: Added LOCUM_RENEWAL label (was already in getApplicationTypeLabel
+  // but missing from dialog dropdown — consistent label mapping)
   const getApplicationTypeLabel = (type) => {
-    if (type === "NEW") return "Initial Appointment";
+    if (type === "NEW")           return "Initial Appointment";
     if (type === "REAPPOINTMENT") return "Reappointment";
     if (type === "LOCUM_RENEWAL") return "Locum Renewal";
     return type || "N/A";
@@ -136,8 +139,8 @@ const PaymentList = () => {
         <div className={style.padding20}>
           <LevelTwoHeader
             heading="Payment List Type"
-            updatedTime={`UPDATED ON ${new Date().toLocaleDateString()}`}
-            path="/Screens/ReferenceList/customerAdminDashboard"
+            updatedTime={lastUpdatedDate ? `UPDATED ON ${lastUpdatedDate}` : ""}
+            path="/referencelist"
             callingFrom="Customer Admin"
             needHeader={false}
             tileType="Applicant"
@@ -146,13 +149,12 @@ const PaymentList = () => {
               setIsEdit(false);
               setIsDialogOpen(true);
             }}
-            onCloseLevel2={() => setIsDialogOpen(false)}
+            onCloseLevel2={() => { window.location.href = "/referencelist"; }}
           />
 
-          {/* Main grid — same pattern as ProfessionalConductDisclosure */}
           <div className={style.bigCardGrid} style={{ alignItems: "stretch" }}>
 
-            {/* ── LEFT SIDEBAR ── uses same applicantList class as right panel so heights match */}
+            {/* LEFT SIDEBAR */}
             <div
               className={style.applicantList}
               style={{
@@ -163,14 +165,7 @@ const PaymentList = () => {
                 gap: "8px",
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "8px",
-                  flex: 1,
-                }}
-              >
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px", flex: 1 }}>
                 {privilegeCategories.map((cat) => {
                   const count = paymentListData.filter(
                     (item) => item.privilegeCategory?.id === cat.id
@@ -189,9 +184,7 @@ const PaymentList = () => {
                         fontSize: "14px",
                         fontWeight: "400",
                         backgroundColor: "#fff",
-                        border: isSelected
-                          ? "2px solid #1a6e6e"
-                          : "1px solid #d0d0d0",
+                        border: isSelected ? "2px solid #1a6e6e" : "1px solid #d0d0d0",
                         borderRadius: "6px",
                         color: "#333",
                         height: "46px",
@@ -200,32 +193,20 @@ const PaymentList = () => {
                         userSelect: "none",
                       }}
                     >
-                      <span
-                        style={{
-                          flex: 1,
-                          paddingRight: "8px",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
+                      <span style={{
+                        flex: 1, paddingRight: "8px",
+                        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                      }}>
                         {cat.category}
                       </span>
-                      <span
-                        style={{
-                          minWidth: "24px",
-                          height: "24px",
-                          borderRadius: "50%",
-                          backgroundColor: isSelected ? "#1a6e6e" : "#e0e0e0",
-                          color: isSelected ? "#fff" : "#555",
-                          fontSize: "11px",
-                          fontWeight: "600",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0,
-                        }}
-                      >
+                      <span style={{
+                        minWidth: "24px", height: "24px", borderRadius: "50%",
+                        backgroundColor: isSelected ? "#1a6e6e" : "#e0e0e0",
+                        color: isSelected ? "#fff" : "#555",
+                        fontSize: "11px", fontWeight: "600",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        flexShrink: 0,
+                      }}>
                         {count}
                       </span>
                     </div>
@@ -234,16 +215,13 @@ const PaymentList = () => {
               </div>
             </div>
 
-            {/* ── RIGHT CONTENT ── */}
+            {/* RIGHT CONTENT */}
             <div className={style.applicantList} style={{ display: "flex", flexDirection: "column", minHeight: 400 }}>
-              {/* Breadcrumb */}
               <div className={`${style.Tabletitle}`}>
                 <Typography className={style.tableTitleContent}>
                   {selectedPrivilegeCategory?.category || ""}
                 </Typography>
-                <Typography
-                  className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}
-                >
+                <Typography className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}>
                   {">"}
                 </Typography>
                 <Typography className={style.tableTitleContent}>
@@ -251,7 +229,6 @@ const PaymentList = () => {
                 </Typography>
               </div>
 
-              {/* Table */}
               <div className={`${style.applicantTableContainer}`}>
                 <table className={`${style.applicantTable}`}>
                   <thead className={`${style.applicantHeader}`}>
@@ -308,7 +285,7 @@ const PaymentList = () => {
               </div>
             </div>
 
-          </div>{/* end bigCardGrid */}
+          </div>
         </div>
       </div>
 
@@ -319,6 +296,9 @@ const PaymentList = () => {
           editData={editData}
           selectedPrivilegeCategory={selectedPrivilegeCategory}
           isEdit={isEdit}
+          // FIX: Pass privilegeCategories as prop so dialog doesn't
+          // make a duplicate GET /privilege call on every open
+          privilegeCategories={privilegeCategories}
         />
       )}
     </Fragment>

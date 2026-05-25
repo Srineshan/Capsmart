@@ -179,10 +179,18 @@ const ProfessionalConductDisclosureDialog = ({
   useEffect(() => {
     if (!open) return;
     if (isEdit && selectedDisclosure) {
-      setSelectedSiteIds(
-        (selectedDisclosure?.siteTypes || selectedDisclosure?.sites || [])
-          .map((s) => s?.id).filter(Boolean)
-      );
+      // Schema: siteType is singular EntityType { id, type }
+      // Match against siteTypeList using getSitePayloadId (siteTypeId.id)
+      const savedSiteType = selectedDisclosure?.siteType;
+      if (savedSiteType?.id) {
+        // Find site instance in siteTypeList whose siteTypeId matches savedSiteType.id
+        const matched = siteTypeList.find(
+          (s) => getSitePayloadId(s) === savedSiteType.id || s?.id === savedSiteType.id
+        );
+        setSelectedSiteIds(matched ? [matched.id] : [savedSiteType.id]);
+      } else {
+        setSelectedSiteIds([]);
+      }
       setSelectedApplicantTypeIds(
         (selectedDisclosure?.applicantTypes || [])
           .map((a) => (typeof a === "object" ? a?.id : a))
@@ -205,17 +213,26 @@ const ProfessionalConductDisclosureDialog = ({
       setSubCategoryText(subCatValue);
       setInstructionalText(selectedDisclosure?.instructionalText || "");
       setDisclosureText(selectedDisclosure?.disclosureText || "");
-      // Normalize responseOption from backend — may be "YesNo", "YES_NO", {value:"YesNo"}, etc.
+      // Normalize responseOption — API returns { responseOption: null } when not set
+      // Always default to "YesNo" if the value is null/empty
       const rawRO = selectedDisclosure?.responseOption;
-      let normalizedRO = "YesNo";
+      let normalizedRO = "YesNo"; // safe default
       if (rawRO) {
-        const roStr = typeof rawRO === "object" ? (rawRO?.value || rawRO?.responseOption || "") : String(rawRO);
+        const roStr = typeof rawRO === "object"
+          ? (rawRO?.responseOption || rawRO?.value || "")
+          : String(rawRO);
         if (roStr === "YES_NO_NA" || roStr === "YesNoNotApplicable") normalizedRO = "YesNoNotApplicable";
         else if (roStr === "YES_NO" || roStr === "YesNo") normalizedRO = "YesNo";
-        else normalizedRO = roStr;
+        // If roStr is empty/null, keep default "YesNo"
       }
       setResponseOption(normalizedRO);
-      setGuidanceText(selectedDisclosure?.applicantGuidanceText || selectedDisclosure?.guidanceText || "");
+      // Schema field is responseOptionText (not applicantGuidanceText)
+      setGuidanceText(
+        selectedDisclosure?.responseOptionText    ||
+        selectedDisclosure?.applicantGuidanceText ||
+        selectedDisclosure?.guidanceText          ||
+        selectedDisclosure?.yesGuidanceText       || ""
+      );
       // Use _raw values if available (normalizeRow overwrites booleans with display strings)
       const rawSupporting = selectedDisclosure?._rawSupportingDocumentRequired
         ?? selectedDisclosure?.supportingDocumentRequired;
@@ -226,7 +243,13 @@ const ProfessionalConductDisclosureDialog = ({
       setSupportingDocument(rawSupporting === true || rawSupporting === "YES" || rawSupporting === "true");
       setRequiresVerification(rawVerification === true || rawVerification === "YES" || rawVerification === "true");
       setVerificationRequiredFrom(rawVerifFrom || "");
-      setReleaseOfInfo(!!(selectedDisclosure?.releaseOfInfoRequired ?? selectedDisclosure?.consentFormRequired));
+      // Schema field is consentFormRequired (boolean)
+      setReleaseOfInfo(!!(
+        selectedDisclosure?.consentFormRequired               ??
+        selectedDisclosure?.releaseOfInfoRequired             ??
+        selectedDisclosure?.releaseOfInformationRequired      ??
+        false
+      ));
       setUploadedFiles([]);
     } else {
       resetFields();
@@ -264,10 +287,13 @@ const ProfessionalConductDisclosureDialog = ({
 
   const getSiteName = (site) => {
     if (!site) return "";
+    // Schema: EntityType { id, type } — primary field is 'type'
+    if (site?.type && typeof site.type === "string") return site.type;
+    // Fallback for older/different shapes
     const raw = site?.siteName;
     if (typeof raw === "string" && raw) return raw;
     if (typeof raw === "object" && raw) return raw?.siteName || raw?.name || "";
-    return site?.name || site?.siteTypeName || site?.siteType?.type || site?.id || "";
+    return site?.name || site?.siteTypeName || site?.id || "";
   };
 
   const getSitePayloadId = (site) => {
@@ -343,11 +369,17 @@ const ProfessionalConductDisclosureDialog = ({
 
     setIsSubmitting(true);
 
-    // Build siteTypes payload — use siteTypeId when available (not the site instance id)
-    const siteTypePayload = selectedSiteIds.map((selId) => {
-      const site = siteTypeList.find((s) => s?.id === selId);
-      return { id: getSitePayloadId(site) || selId };
-    });
+    // Schema: siteType is singular EntityType { id, type } — NOT an array
+    // Find the selected site and send as single object
+    const selectedSite = siteTypeList.find((s) => selectedSiteIds.includes(s?.id));
+    const siteTypePayload = selectedSite
+      ? {
+          id:   getSitePayloadId(selectedSite) || selectedSite?.id || "",
+          type: getSiteName(selectedSite) || selectedSite?.type || "",
+        }
+      : selectedSiteIds.length > 0
+        ? { id: selectedSiteIds[0], type: "" }
+        : null;
 
     // ── responseOption fix ───────────────────────────────────────────────────
     // The Java backend type is ResponseOptions (a value object, NOT a plain enum).
@@ -358,18 +390,18 @@ const ProfessionalConductDisclosureDialog = ({
     //   Shape C (plain string fallback):    "YES_NO"
     const buildPayload = (responseOptionShape) => ({
       applicantTypes:             selectedApplicantTypeIds.map((id) => ({ id })),
-      siteTypes:                  siteTypePayload,
+      siteType:                   siteTypePayload,        // schema: singular EntityType { id, type }
       category:                   disclosureCategory.trim(),
       hasSubCategory:             addSubCategory,
       subCategory:                addSubCategory ? subCategoryText.trim() : "",
       instructionalText:          instructionalText.trim(),
       disclosureText:             disclosureText.trim(),
       responseOption:             responseOptionShape,
-      applicantGuidanceText:      guidanceText.trim(),
-      supportingDocumentRequired: supportingDocument,
-      verificationRequired:       requiresVerification,
-      verificationRequiredFrom:   requiresVerification ? verificationRequiredFrom : "",
-      releaseOfInfoRequired:      releaseOfInfo,
+      responseOptionText:         guidanceText.trim(),         // schema: responseOptionText
+      supportingDocumentRequired: supportingDocument,           // schema: boolean
+      verificationRequired:       requiresVerification,         // schema: boolean
+      verificationRequiredFrom:   requiresVerification ? verificationRequiredFrom : "", // schema enum
+      consentFormRequired:        releaseOfInfo,                // schema: consentFormRequired boolean
     });
 
     // Three candidate shapes for responseOption — backend will accept exactly one

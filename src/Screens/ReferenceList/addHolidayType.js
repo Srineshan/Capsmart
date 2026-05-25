@@ -8,7 +8,7 @@ const AddHolidayType = ({
   open,                  // boolean — controls dialog visibility
   getAddEntityDialog,    // callback(false) to close
   onSuccess,             // optional: called after successful save
-  preSelectedIndustryId, // ✅ pre-selects the currently active industry
+  preSelectedIndustryId, // pre-selects the currently active industry
 }) => {
   const [industry, setIndustry]         = useState([]);
   const [industryName, setIndustryName] = useState("");
@@ -25,7 +25,7 @@ const AddHolidayType = ({
     if (open) GetIndustryData();
   }, [open]);
 
-  // ✅ Pre-select active industry when list loads
+  // Pre-select active industry when list loads
   useEffect(() => {
     if (industry.length > 0) {
       setIndustryName(preSelectedIndustryId || industry[0]?.id || "");
@@ -47,9 +47,10 @@ const AddHolidayType = ({
 
     setIsSubmitting(true);
     try {
+      // FIX: Removed customized: true — HolidayMaster model has no customized field
       await POST(
         "entity-service/yearMaster",
-        JSON.stringify({ year: `${years}`, industryId: { id: industryName }, customized: true })
+        JSON.stringify({ year: `${years}`, industryId: { id: industryName } })
       );
       SuccessToaster("Year Added Successfully");
       if (onSuccess) onSuccess();
@@ -69,7 +70,7 @@ const AddHolidayType = ({
     >
       <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
 
-        {/* ✅ Header: clean title + × only — removed broken Wikipedia flag image */}
+        {/* Header */}
         <div className={style.spaceBetween}>
           <p className={style.extensionStyle}>Add Holiday Year</p>
           <Icon
@@ -104,7 +105,7 @@ const AddHolidayType = ({
             </div>
           </div>
 
-          {/* Year dropdown — starts from 2021, includes 2026 */}
+          {/* Year dropdown — 2021 to 2050 */}
           <div className={`${style.editHealthCareGrid2} ${style.marginTop20}`}>
             <div className={style.entityLableStyle}>Year *</div>
             <div className={style.displayInRow}>

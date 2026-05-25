@@ -2,7 +2,7 @@ import React, { Fragment, useState, useEffect, useRef } from "react";
 import Navbar from "../../../Components/Navbar";
 import SideBar from "../../../Components/Sidebar";
 import style from "./department.module.scss";
-import { GET, POST, DELETE, PUT } from "../../dataSaver";
+import { GET, POST, PUT } from "../../dataSaver";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
 import { SuccessToaster, ErrorToaster } from "../../../utils/toaster";
@@ -11,6 +11,7 @@ import IndustriesEntityFolder from "../../../images/industriesEntityFolder.png";
 import EditHcRow from "../../../images/editHcRow.png";
 import DeleteHcFolder from "../../../images/deleteHcFolder.png";
 
+// ─── Constants ────────────────────────────────────────────────────────────────
 const COUNTRY_LIST = [
   { code: "us", name: "USA",         label: "United States"        },
   { code: "gb", name: "UK",          label: "United Kingdom"       },
@@ -24,6 +25,7 @@ const COUNTRY_LIST = [
   { code: "nz", name: "New Zealand", label: "New Zealand"          },
 ];
 
+// ─── Flag image ───────────────────────────────────────────────────────────────
 const FlagImg = ({ code, size = 20 }) => (
   <img
     src={`https://flagcdn.com/w${size}/${code}.png`}
@@ -36,13 +38,7 @@ const FlagImg = ({ code, size = 20 }) => (
   />
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// KEY FIX: Whitelist is keyed by NORMALISED DEPARTMENT NAME (not by backend ID)
-// because the same department (e.g. "Blood Bank") appears in the API response
-// with dozens of different IDs across different sites/entities.
-// Deleting "Blood Bank" must remove ALL entries with that name, not just one ID.
-// ─────────────────────────────────────────────────────────────────────────────
-
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 const normaliseName = (item) =>
   (
     item?.departmentGroupBy?.name ||
@@ -66,31 +62,45 @@ const getSiteDisplayName = (site) => {
   return site?.name || site?.siteTypeName || "";
 };
 
-// ── localStorage helpers (name-keyed whitelist) ───────────────────────────────
-const storageKey = (siteTypeId) =>
-  `dept_saved_names_${siteTypeId || "default"}`;
-
-const loadWhitelist = (siteTypeId) => {
+// ─── localStorage helpers ─────────────────────────────────────────────────────
+// Key: siteId — every piece of state is scoped to the actual site instance
+const deletedNamesKey = (siteId) => `dept_deleted_names_${siteId || "x"}`;
+const loadDeletedNames = (siteId) => {
   try {
-    const stored = localStorage.getItem(storageKey(siteTypeId));
-    return stored ? new Set(JSON.parse(stored)) : new Set();
+    const v = localStorage.getItem(deletedNamesKey(siteId));
+    return v ? new Set(JSON.parse(v)) : new Set();
   } catch { return new Set(); }
 };
-
-const saveWhitelist = (siteTypeId, nameSet) => {
-  try {
-    localStorage.setItem(storageKey(siteTypeId), JSON.stringify([...nameSet]));
-  } catch (e) { console.warn("[Dept] localStorage write failed:", e); }
+const saveDeletedNames = (siteId, ns) => {
+  try { localStorage.setItem(deletedNamesKey(siteId), JSON.stringify([...ns])); } catch (e) {}
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// Pending items: newly selected departments that POST was accepted for
+// but GET /department/{siteId} hasn't returned them yet (backend async delay).
+// These survive page refresh so custom list stays populated.
+const pendingKey   = (siteId) => `dept_pending_${siteId || "x"}`;
+const loadPending  = (siteId) => {
+  try { const v = localStorage.getItem(pendingKey(siteId)); return v ? JSON.parse(v) : []; } catch { return []; }
+};
+const savePending  = (siteId, arr) => {
+  try { localStorage.setItem(pendingKey(siteId), JSON.stringify(arr)); } catch (e) {}
+};
+const removePending = (siteId, norm) => {
+  try {
+    const existing = loadPending(siteId);
+    savePending(siteId, existing.filter((p) => normaliseName(p) !== norm));
+  } catch (e) {}
+};
 
+// ─── Component ────────────────────────────────────────────────────────────────
 const Departments = () => {
-  const [entityId, setEntityId]               = useState("");
+  const [entityId, setEntityId]           = useState("");
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
-  const [siteTypeId, setSiteTypeId]           = useState("");
-  const [siteId, setSiteId]                   = useState("");
-  const [siteName, setSiteName]               = useState("");
+  const [siteTypeId, setSiteTypeId]       = useState("");
+  const [siteId, setSiteId]               = useState("");
+  const siteIdRef = useRef("");
+  const siteTypeIdRef = useRef("");
+  const [siteName, setSiteName]           = useState("");
 
   const [selectedCountry, setSelectedCountry]         = useState(COUNTRY_LIST[0]);
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
@@ -112,22 +122,21 @@ const Departments = () => {
   const [isSaving, setIsSaving]         = useState(false);
   const [isExpanded, setIsExpanded]     = useState(true);
 
-  // Name-based whitelist — a Set of normalised department names the user has selected
-  const whitelistRef = useRef(new Set());
+  // deletedNamesRef: names the user deleted this session
+  // Filters them out of GET response while backend async delete is processing
+  const deletedNamesRef = useRef(new Set());
 
-  // ── Lifecycle ──────────────────────────────────────────────────────────────
+  // ── Lifecycle ────────────────────────────────────────────────────────────────
   useEffect(() => { getEntity(); getSites(); }, []);
   useEffect(() => { if (entityId) getLastModifiedDate(entityId); }, [entityId]);
-
   useEffect(() => {
-    if (!siteTypeId) return;
-    // Load persisted whitelist for this site, then fetch both panels
-    whitelistRef.current = loadWhitelist(siteTypeId);
+    if (!siteId) return;
+    deletedNamesRef.current = loadDeletedNames(siteId);
     loadStandardList();
     loadCustomList();
-  }, [siteTypeId]);
+  }, [siteId]);
 
-  // ── Data fetchers ──────────────────────────────────────────────────────────
+  // ── Data fetchers ─────────────────────────────────────────────────────────────
   const getEntity = async () => {
     try {
       const { data } = await GET("entity-service/entity");
@@ -140,14 +149,17 @@ const Departments = () => {
       const { data } = await GET("entity-service/sites");
       if (data?.length > 0) {
         const first = data[0];
-        setSiteId(first?.id || "");
-        setSiteName(getSiteDisplayName(first));
+        const sid = first?.id || "";
         const typeId =
           first?.siteTypeId?.id ||
           first?.siteType?.id   ||
           (typeof first?.siteTypeId === "string" ? first.siteTypeId : "") ||
           first?.id || "";
+        setSiteId(sid);
+        siteIdRef.current = sid;
         setSiteTypeId(typeId);
+        siteTypeIdRef.current = typeId;
+        setSiteName(getSiteDisplayName(first));
       }
     } catch (e) {}
   };
@@ -165,119 +177,105 @@ const Departments = () => {
     } catch (e) {}
   };
 
+  // Standard list: GET /departmentMaster (master/default list shown on LEFT)
   const loadStandardList = async () => {
     setIsStandardLoading(true);
     try {
       let data = [];
       try {
-        const res = await GET(`entity-service/departmentMaster/refListView?siteTypeId=${siteTypeId}`);
+        const res = await GET(`entity-service/departmentMaster/refListView?siteTypeId=${siteTypeIdRef.current}`);
         data = res?.data || [];
       } catch (e) {}
       if (data.length === 0) {
-        try { const res = await GET("entity-service/departmentMaster"); data = res?.data || []; } catch (e) {}
+        try {
+          const res = await GET("entity-service/departmentMaster");
+          data = res?.data || [];
+        } catch (e) {}
       }
       setStandardList(data);
-    } finally { setIsStandardLoading(false); }
+    } finally {
+      setIsStandardLoading(false);
+    }
   };
 
-  // loadCustomList — shows ALL departments for this site
-  // FIX: Removed whitelist filter.
-  // GET /department/{siteId} already returns only this hospital's departments.
-  // Whitelist was hiding valid records added via backend/old code.
-  // Whitelist is now only used to track SELECT flow (prevent duplicates).
+  // Custom list: GET /department — entity department API (department-controller)
+  // Returns 852 records globally — we filter by siteTypeId to get THIS hospital only
+  // siteTypeId (63ae...) scopes records to this hospital's type
   const loadCustomList = async () => {
     setIsCustomLoading(true);
     try {
-      let data = [];
+      const res = await GET("entity-service/department");
+      const raw = res?.data;
+      const all = Array.isArray(raw) ? raw
+        : Array.isArray(raw?.content) ? raw.content : [];
 
-      // PRIMARY: GET /department/{siteId} — only this site's depts (~10 records)
-      if (siteId) {
-        try {
-          const res = await GET(`entity-service/department/${siteId}`);
-          const raw = res?.data;
-          data = Array.isArray(raw) ? raw
-            : Array.isArray(raw?.content) ? raw.content : [];
-          console.log(`[Dept] /department/${siteId}: ${data.length} records`);
-        } catch (e) { console.warn('[Dept] /department/{siteId} failed:', e?.message); }
-      }
+      // Filter to THIS hospital: customized:true + siteTypeId matches
+      const thisSiteTypeId = siteTypeIdRef.current;
+      const filtered = all.filter((item) =>
+        item?.customized === true &&
+        (!thisSiteTypeId || item?.siteTypeId?.id === thisSiteTypeId)
+      );
 
-      // FALLBACK 1: refListView by siteTypeId
-      if (data.length === 0) {
-        try {
-          const res = await GET(`entity-service/department/refListView?siteTypeId=${siteTypeId}&searchText=`);
-          const raw = res?.data;
-          data = Array.isArray(raw) ? raw
-            : Array.isArray(raw?.content) ? raw.content : [];
-          console.log(`[Dept] refListView fallback: ${data.length} records`);
-        } catch (e) { console.warn('[Dept] refListView failed:', e?.message); }
-      }
+      // Build API name set for auto-clearing stale deletedNames
+      const apiNames = new Set(filtered.map(normaliseName).filter(Boolean));
 
-      // FALLBACK 2: GET /department filtered by siteTypeId
-      if (data.length === 0) {
-        try {
-          const res = await GET('entity-service/department');
-          const raw = res?.data;
-          const all = Array.isArray(raw) ? raw
-            : Array.isArray(raw?.content) ? raw.content : [];
-          data = siteTypeId
-            ? all.filter((item) => {
-                const s = item?.siteTypeId?.id ||
-                  (typeof item?.siteTypeId === 'string' ? item.siteTypeId : '');
-                return s === siteTypeId;
-              })
-            : all;
-          console.warn(`[Dept] last resort: total=${all.length} filtered=${data.length}`);
-        } catch (e) { console.warn('[Dept] fallback failed:', e?.message); }
-      }
+      // Auto-clear deletedNames confirmed gone from API (deletion processed)
+      let changed = false;
+      deletedNamesRef.current.forEach((norm) => {
+        if (!apiNames.has(norm)) { deletedNamesRef.current.delete(norm); changed = true; }
+      });
+      if (changed) saveDeletedNames(siteIdRef.current, deletedNamesRef.current);
 
-      if (data.length === 0) {
-        console.warn('[Dept] All endpoints returned 0 — keeping local state.');
-        return;
-      }
-
-      // Deduplicate by name only (API may return same dept with different IDs)
       const seenNames = new Set();
-      const result = [];
-      for (const item of data) {
+      const result    = [];
+      for (const item of filtered) {
         const norm = normaliseName(item);
         if (!norm || seenNames.has(norm)) continue;
+        if (deletedNamesRef.current.has(norm)) continue;
         seenNames.add(norm);
         result.push({ ...item, serviceAreas: item?.serviceAreas || [] });
       }
 
-      console.log(`[Dept] showing all ${result.length} site departments`);
-
-      // Sync whitelist so SELECT flow knows what's already in custom list
-      result.forEach((item) => {
-        const norm = normaliseName(item);
-        if (norm) whitelistRef.current.add(norm);
+      // Merge pending: newly POSTed items not yet returned by GET /department
+      const pending = loadPending(siteIdRef.current).filter((p) => {
+        const norm = normaliseName(p);
+        if (!norm || deletedNamesRef.current.has(norm)) return false;
+        if (seenNames.has(norm)) { removePending(siteIdRef.current, norm); return false; }
+        return true;
       });
-      saveWhitelist(siteTypeId, whitelistRef.current);
 
-      setCustomList(result);
+      setCustomList([...result, ...pending]);
+    } catch (e) {
+      console.warn("[Dept] loadCustomList failed:", e?.message);
     } finally {
       setIsCustomLoading(false);
     }
   };
 
-  // ── SELECT ─────────────────────────────────────────────────────────────────
+  // ── SELECT: move items from standard list → custom list ───────────────────────
+  // Flow:
+  //   1. POST /department to save (siteTypeId is correct per backend schema)
+  //   2. Optimistically add to UI immediately (no waiting)
+  //   3. After 2s, re-fetch GET /department/{siteId} to get real backend IDs
+  //      so DELETE works correctly via PUT /department/{realId}
   const handleSelect = async () => {
     if (selectedStandardItems.length === 0) return;
 
-    // FIX: Compare by name - standard list IDs differ from custom list IDs
-    const existingCustomNames = new Set(customList.map(normaliseName));
+    // Only add items not already in custom list (compare by normalised name)
+    const existingNames = new Set(customList.map(normaliseName));
     const toAdd = selectedStandardItems.filter(
-      (item) => !existingCustomNames.has(normaliseName(item))
+      (item) => !existingNames.has(normaliseName(item))
     );
 
     if (toAdd.length === 0) {
-      ErrorToaster('Selected department(s) already exist in your custom list.');
+      ErrorToaster("Selected department(s) already exist in your custom list.");
       setSelectedStandardItems([]);
       return;
     }
 
     setIsSaving(true);
     try {
+      // POST payload — siteTypeId is the correct field per Swagger schema
       const payload = toAdd.map((item) => ({
         departmentName: { name: getItemName(item) },
         aliasName1:     item?.aliasName1 || "",
@@ -287,47 +285,106 @@ const Departments = () => {
           aliasName1: child?.aliasName1 || "",
           aliasName2: child?.aliasName2 || "",
         })),
-        // FIX: Use siteId (not siteTypeId) to match GET /department/{siteId}
-        // GET uses siteId=66fa... but POST was sending siteTypeId=63ae... (different)
-        // Newly added items must be stored under the same siteId used for fetching
-        siteTypeId: siteId ? { id: siteId } : undefined,
+        siteTypeId: siteTypeIdRef.current ? { id: siteTypeIdRef.current } : undefined,
+        customized:  true,
+        active:      true,
       }));
 
       await POST("entity-service/department", JSON.stringify(payload));
       SuccessToaster(`${toAdd.length} department(s) saved successfully.`);
 
-      // Add normalised names to whitelist and persist
-      toAdd.forEach((item) => {
-        const norm = normaliseName(item);
-        if (norm) whitelistRef.current.add(norm);
+      // Remove these names from deletedNamesRef (user is re-adding after delete)
+      const toAddNorms = new Set(toAdd.map(normaliseName));
+      toAddNorms.forEach((norm) => {
+        deletedNamesRef.current.delete(norm);
       });
-      saveWhitelist(siteTypeId, whitelistRef.current);
+      saveDeletedNames(siteIdRef.current, deletedNamesRef.current);
 
-      // FIX 1: Optimistically add to customList immediately
-      // Do NOT call loadCustomList() after SELECT because
-      // GET /department/{siteId} may not return the newly POSTed item
-      // immediately (backend indexing delay or different siteId mapping).
-      // The optimistic item stays in the list permanently.
-      // On next page load, loadCustomList() will fetch fresh from API.
-      const newItems = toAdd.map((item) => ({
-        ...item,
-        name:         getItemName(item),
+      // Step 1: Optimistically show in UI immediately with id:null (no real ID yet)
+      // Use dedup-merge to prevent duplicate if item was already in state somehow
+      const optimisticItems = toAdd.map((item) => ({
+        id:             null,           // real ID unknown until GET returns
+        name:           getItemName(item),
         departmentName: { name: getItemName(item) },
-        serviceAreas: getChildren(item).map((child) => ({
-          name:       child?.name || child?.serviceName || '',
-          aliasName1: child?.aliasName1 || '',
-          aliasName2: child?.aliasName2 || '',
+        aliasName1:     item?.aliasName1 || "",
+        aliasName2:     item?.aliasName2 || "",
+        serviceAreas:   getChildren(item).map((child) => ({
+          name:       child?.name || child?.serviceName || "",
+          aliasName1: child?.aliasName1 || "",
+          aliasName2: child?.aliasName2 || "",
         })),
-        _pending: false,
+        customized: true,
+        _optimistic: true,             // flag: no real ID yet, skip PUT on delete
       }));
-      setCustomList((prev) => [...prev, ...newItems]);
 
-      // Now that siteId matches in both POST and GET,
-      // refresh from API after short delay to get server-confirmed data
-      await new Promise((r) => setTimeout(r, 800));
-      await loadCustomList();
+      setCustomList((prev) => [
+        ...prev.filter((c) => !toAddNorms.has(normaliseName(c))),
+        ...optimisticItems,
+      ]);
+
+      // Save to pending localStorage so items survive page refresh
+      // Dedup: remove stale pending entries for same names first
+      const existingPending = loadPending(siteIdRef.current);
+      savePending(siteIdRef.current, [
+        ...existingPending.filter((p) => !toAddNorms.has(normaliseName(p))),
+        ...optimisticItems.map((i) => ({
+          id:             null,
+          name:           getItemName(i),
+          departmentName: i.departmentName,
+          aliasName1:     i.aliasName1 || "",
+          aliasName2:     i.aliasName2 || "",
+          serviceAreas:   i.serviceAreas || [],
+          customized:     true,
+          _optimistic:    true,
+        })),
+      ]);
+
+      // Step 2: After 2s, re-fetch GET /department to get real IDs
+      await new Promise((r) => setTimeout(r, 2000));
+      try {
+        const res = await GET("entity-service/department");
+        const raw = res?.data;
+        const all = Array.isArray(raw) ? raw
+          : Array.isArray(raw?.content) ? raw.content : [];
+
+        // Build a name → real record map — filter by siteTypeId for this hospital
+        const thisSiteTypeId = siteTypeIdRef.current;
+        const realRecordMap = {};
+        all
+          .filter((r) => r?.customized === true &&
+            (!thisSiteTypeId || r?.siteTypeId?.id === thisSiteTypeId))
+          .forEach((r) => {
+            const norm = normaliseName(r);
+            if (norm) realRecordMap[norm] = r;
+          });
+
+        // Update customList: replace optimistic items with real records where available
+        setCustomList((prev) => {
+          const seenNames = new Set();
+          return prev
+            .map((item) => {
+              const norm = normaliseName(item);
+              if (item._optimistic && realRecordMap[norm]) {
+                // Got real record — replace optimistic with real (has real ID)
+                return { ...realRecordMap[norm], serviceAreas: realRecordMap[norm].serviceAreas || [] };
+              }
+              return item;
+            })
+            .filter((item) => {
+              // Deduplicate by name (keep first occurrence)
+              const norm = normaliseName(item);
+              if (seenNames.has(norm)) return false;
+              seenNames.add(norm);
+              return true;
+            })
+            .filter((item) => !deletedNamesRef.current.has(normaliseName(item)));
+        });
+      } catch (e) {
+        console.warn("[Dept] post-select GET failed:", e?.message);
+        // Optimistic items remain — DELETE will be UI-only for them
+      }
     } catch (err) {
-      console.error("[Dept] SELECT save error:", err);
+      console.error("[Dept] SELECT error:", err);
       ErrorToaster(err?.message || "Failed to save selected departments.");
     } finally {
       setIsSaving(false);
@@ -335,131 +392,128 @@ const Departments = () => {
     }
   };
 
-  // ── DELETE ─────────────────────────────────────────────────────────────────
+  // ── DELETE ───────────────────────────────────────────────────────────────────
+  // Flow:
+  //   1. Remove from UI immediately (optimistic)
+  //   2. Track name in deletedNamesRef so loadCustomList filters it out
+  //   3. If item has a real ID → PUT /department/{id} with deleted:true
+  //   4. If item is optimistic (id:null) → UI removal only
+  //      (it was never confirmed by GET, so no backend record to delete)
   const handleDelete = async (item) => {
     const id   = item?.id;
     const name = getItemName(item);
     const norm = normaliseName(item);
 
-    // KEY FIX: Remove the NAME from whitelist — this removes ALL duplicates by name
+    // Track deleted name — filters this out of GET response on next load
     if (norm) {
-      whitelistRef.current.delete(norm);
-      saveWhitelist(siteTypeId, whitelistRef.current);
+      deletedNamesRef.current.add(norm);
+      saveDeletedNames(siteIdRef.current, deletedNamesRef.current);
     }
 
-    // Optimistically remove from UI by name (catches all duplicates in local state too)
-    setCustomList((prev) =>
-      prev.filter((c) => normaliseName(c) !== norm)
-    );
+    // Remove from pending localStorage so re-add doesn't get duplicate
+    removePending(siteIdRef.current, norm);
 
-    if (!id) {
+    // Remove from UI immediately by name
+    setCustomList((prev) => prev.filter((c) => normaliseName(c) !== norm));
+
+    // If optimistic item (no real ID yet) — UI removal is sufficient
+    // The POST was accepted but GET hasn't returned the real ID yet
+    // deletedNamesRef will filter it out when GET eventually returns it
+    if (!id || item?._optimistic) {
       SuccessToaster("Department removed.");
       return;
     }
 
-    // FIX 2: Use DELETE endpoint (Swagger: DELETE /department/{id})
-    // not PUT with deleted:true, because soft-delete via PUT means
-    // GET /department/{siteId} still returns the item on next load.
-    // Hard DELETE removes it permanently so it reappears in standard list.
+    // Has real ID — call PUT /department/{id} with deleted:true
     try {
-      await DELETE(`entity-service/department/${id}`);
-      console.log("[Dept] DELETE success for id:", id);
+      const payload = {
+        departmentName: item?.departmentName || item?.departmentGroupBy || { name },
+        aliasName1:     item?.aliasName1 || "",
+        aliasName2:     item?.aliasName2 || "",
+        serviceAreas:   (item?.serviceAreas || []).map((a) => ({
+          name:       a?.name || a?.serviceName || "",
+          aliasName1: a?.aliasName1 || "",
+          aliasName2: a?.aliasName2 || "",
+        })),
+        siteTypeId: siteTypeIdRef.current ? { id: siteTypeIdRef.current } : undefined,
+        deleted:    true,
+        active:     false,
+        customized: false,
+      };
+      await PUT(`entity-service/department/${id}`, JSON.stringify(payload));
       SuccessToaster("Department removed.");
-      // Item already removed from customList optimistically above.
-      // filteredStandard will now auto-show it back in standard list
-      // because customList no longer contains it.
-    } catch (putErr) {
-      console.warn("[Dept] DELETE failed, trying PUT soft-delete:", putErr?.message);
-      // Fallback: soft delete via PUT
-      try {
-        const payload = {
-          departmentName: { name },
-          aliasName1:     item?.aliasName1 || "",
-          aliasName2:     item?.aliasName2 || "",
-          serviceAreas:   [],
-          deleted:        true,
-          active:         false,
-        };
-        await PUT(`entity-service/department/${id}`, JSON.stringify(payload));
-        SuccessToaster("Department removed.");
-      } catch (err2) {
-        console.warn("[Dept] soft-delete also failed:", err2?.message);
-        // Restore whitelist and UI on total failure
-        if (norm) {
-          whitelistRef.current.add(norm);
-          saveWhitelist(siteTypeId, whitelistRef.current);
-        }
-        setCustomList((prev) => [...prev, item]);
-        ErrorToaster("Could not delete department. Please try again.");
+    } catch (err) {
+      console.warn("[Dept] DELETE PUT failed:", err?.message);
+      // Rollback
+      if (norm) {
+        deletedNamesRef.current.delete(norm);
+        saveDeletedNames(siteIdRef.current, deletedNamesRef.current);
       }
+      setCustomList((prev) => [...prev, item]);
+      ErrorToaster("Could not delete department. Please try again.");
     }
   };
 
-  // ── Dialog close handler ───────────────────────────────────────────────────
-  // DepartmentDialog calls:
-  //   ADD  → handleClose(true, newItem)     — new item object
-  //   EDIT → handleClose(true, updatedItem) — updated item object (with id)
-  //   CANCEL → handleClose(false, null)
+  // ── Dialog close (Add / Edit via + button) ────────────────────────────────────
   const handleDialogClose = async (needRefetch, newItem) => {
     setIsDialogOpen(false);
 
     if (needRefetch) {
-      const hasId = !!(newItem?.id || editData?.id);
-      const wasEdit = isEdit && hasId;
+      const wasEdit = isEdit && newItem?.id;
 
       if (wasEdit) {
-        // ── EDIT flow ────────────────────────────────────────────────────
-        // ✅ FIX: Use updatedItem from dialog to update local state immediately.
-        // Do NOT call loadCustomList() — API loses serviceAreas in response.
-        // Old: await loadCustomList() → API had no serviceAreas → empty ❌
-        // New: update local state with newItem.serviceAreas directly ✅
-        if (newItem) {
-          const norm = normaliseName(newItem);
-          setCustomList((prev) =>
-            prev.map((c) =>
-              normaliseName(c) === norm
-                ? {
-                    ...c,
-                    name:           newItem.departmentName?.name || newItem.name || c.name,
-                    departmentName: newItem.departmentName || c.departmentName,
-                    aliasName1:     newItem.aliasName1 ?? c.aliasName1,
-                    aliasName2:     newItem.aliasName2 ?? c.aliasName2,
-                    serviceAreas:   newItem.serviceAreas?.length > 0
-                      ? newItem.serviceAreas   // ✅ what user just typed
-                      : c.serviceAreas || [],
-                  }
-                : c
-            )
-          );
-        }
-      } else if (newItem) {
-        // ── ADD flow ──────────────────────────────────────────────────────
-        // 1. Optimistically show it in the UI immediately
+        // EDIT: update local state immediately with what user typed
         const norm = normaliseName(newItem);
-        const name = newItem?.departmentName?.name || newItem?.name || "";
-
-        if (norm) {
-          whitelistRef.current.add(norm);
-          saveWhitelist(siteTypeId, whitelistRef.current);
-        }
-
+        setCustomList((prev) =>
+          prev.map((c) =>
+            normaliseName(c) === norm
+              ? {
+                  ...c,
+                  name:           newItem.departmentName?.name || newItem.name || c.name,
+                  departmentName: newItem.departmentName || c.departmentName,
+                  aliasName1:     newItem.aliasName1 ?? c.aliasName1,
+                  aliasName2:     newItem.aliasName2 ?? c.aliasName2,
+                  // ✅ FIX: also update regionalCallResponsibilitiesApplicable
+                  regionalCallResponsibilitiesApplicable:
+                    newItem.regionalCallResponsibilitiesApplicable ?? c.regionalCallResponsibilitiesApplicable,
+                  serviceAreas:   newItem.serviceAreas?.length > 0
+                    ? newItem.serviceAreas
+                    : c.serviceAreas || [],
+                }
+              : c
+          )
+        );
+      } else if (newItem) {
+        // ADD: show optimistically + save to pending localStorage
+        // POST /department returns "ACCEPTED" (async) — item may not appear
+        // in GET /department immediately. Pending bridges the gap.
+        const norm = normaliseName(newItem);
         const alreadyExists = customList.some((c) => normaliseName(c) === norm);
-        if (!alreadyExists && name) {
-          setCustomList((prev) => [...prev, { ...newItem }]);
-        }
+        if (!alreadyExists) {
+          const optimisticItem = { ...newItem, id: null, _optimistic: true };
+          setCustomList((prev) => [...prev, optimisticItem]);
 
-        // 2. Wait briefly then refresh from API
-        await new Promise((r) => setTimeout(r, 600));
-        try {
-          await loadCustomList();
-          setCustomList((prev) => {
-            const foundNew = prev.some((r) => normaliseName(r) === norm);
-            if (!foundNew) return [...prev, { ...newItem }];
-            return prev;
-          });
-        } catch (e) {
-          console.warn("[Dept] post-dialog refresh failed:", e?.message);
+          // Save to pending so it survives page refresh
+          const existingPending = loadPending(siteIdRef.current);
+          savePending(siteIdRef.current, [
+            ...existingPending.filter((p) => normaliseName(p) !== norm),
+            {
+              id:             null,
+              name:           newItem.departmentName?.name || newItem.name || "",
+              departmentName: newItem.departmentName || { name: newItem.name || "" },
+              aliasName1:     newItem.aliasName1 || "",
+              aliasName2:     newItem.aliasName2 || "",
+              regionalCallResponsibilitiesApplicable:
+                newItem.regionalCallResponsibilitiesApplicable || false,
+              serviceAreas:   newItem.serviceAreas || [],
+              customized:     true,
+              _optimistic:    true,
+            },
+          ]);
         }
+        // Try to get real ID after delay (backend async indexing)
+        await new Promise((r) => setTimeout(r, 2000));
+        await loadCustomList();
       }
     }
 
@@ -467,7 +521,7 @@ const Departments = () => {
     setEditData(null);
   };
 
-  // ── Mark as done ───────────────────────────────────────────────────────────
+  // ── Mark as done ──────────────────────────────────────────────────────────────
   const handleMarkAsDone = async () => {
     try {
       await PUT(
@@ -478,7 +532,7 @@ const Departments = () => {
     finally { SuccessToaster("Marked as done."); window.location.href = "/referencelist"; }
   };
 
-  // ── UI helpers ─────────────────────────────────────────────────────────────
+  // ── UI helpers ────────────────────────────────────────────────────────────────
   const toggleStandard = (key) => setExpandedStandard((prev) => ({ ...prev, [key]: !prev[key] }));
   const toggleCustom   = (key) => setExpandedCustom((prev) => ({ ...prev, [key]: !prev[key] }));
 
@@ -493,14 +547,13 @@ const Departments = () => {
   const isSelected = (item) =>
     selectedStandardItems.some((s) => normaliseName(s) === normaliseName(item));
 
-  // Show standard list items NOT already in custom list (by name match)
-  // After delete from custom list -> name removed -> item reappears here
+  // Standard list shows only items NOT already in custom list
   const customNames      = new Set(customList.map(normaliseName));
   const filteredStandard = standardList.filter(
     (item) => !customNames.has(normaliseName(item))
   );
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────────────────
   return (
     <Fragment>
       <Navbar />
@@ -579,8 +632,6 @@ const Departments = () => {
 
             {/* WHITE CARD */}
             <div className={style.deptCard}>
-
-              {/* TWO-PANEL GRID */}
               <div className={style.deptPanelGrid}>
 
                 {/* LEFT: Standard List */}
@@ -588,7 +639,6 @@ const Departments = () => {
                   <div className={style.deptPanelHeader}>
                     STANDARD LIST IN USE- DEFAULT
                   </div>
-
                   {siteName && (
                     <div className={style.deptSiteRow}>
                       <img src={IndustriesEntityFolder} alt="" className={style.deptFolderIcon} />
@@ -601,7 +651,6 @@ const Departments = () => {
                       </button>
                     </div>
                   )}
-
                   {!isStandardCollapsed && (
                     <div className={style.deptPanelBody}>
                       {isStandardLoading ? (
@@ -672,7 +721,6 @@ const Departments = () => {
                       <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 22, height: 22, borderRadius: "50%", border: "2px solid #fff", boxSizing: "border-box", color: "#fff", fontSize: 17, lineHeight: 1, fontWeight: 300 }}>+</span>
                     </button>
                   </div>
-
                   {siteName && (
                     <div className={style.deptSiteRow}>
                       <img src={IndustriesEntityFolder} alt="" className={style.deptFolderIcon} />
@@ -685,7 +733,6 @@ const Departments = () => {
                       </button>
                     </div>
                   )}
-
                   {!isCustomCollapsed && (
                     <div className={style.deptPanelBody}>
                       {isCustomLoading ? (
@@ -727,10 +774,6 @@ const Departments = () => {
                                 <span className={style.deptChildName}>
                                   {child?.name || child?.serviceName || ""}
                                 </span>
-                                <div className={style.deptChildActions}>
-                                  <img src={EditHcRow} alt="Edit" className={style.deptChildActionIcon} />
-                                  <img src={DeleteHcFolder} alt="Delete" className={style.deptChildActionIcon} />
-                                </div>
                               </div>
                             ))}
                           </div>
@@ -739,25 +782,13 @@ const Departments = () => {
                     </div>
                   )}
                 </div>
+
               </div>
 
-              {/* FOOTER */}
-              <div className={style.deptFooter}>
-                <button
-                  className={`${style.deptSaveBtn} ${style.deptMarkDoneBtn}`}
-                  onClick={handleMarkAsDone}
-                  disabled={isSaving}
-                >
-                  MARK AS DONE
-                </button>
-              </div>
 
             </div>
-            {/* end white card */}
 
           </div>
-          {/* end main content */}
-
         </div>
       </div>
 

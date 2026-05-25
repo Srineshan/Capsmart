@@ -125,10 +125,15 @@ const ProfessionalConductDisclosure = () => {
       verificationRequired:  verifDisplay,
       lastModifiedDate:
         row?.lastModifiedDate || row?.lastModified || row?.updatedAt || null,
-      // Raw API values preserved for edit dialog
+      // Raw API values preserved for edit dialog — use exact schema field names
       _rawSupportingDocumentRequired: row?.supportingDocumentRequired,
       _rawVerificationRequired:       row?.verificationRequired,
       _rawVerificationRequiredFrom:   row?.verificationRequiredFrom,
+      // Schema: consentFormRequired (boolean), responseOptionText (string)
+      consentFormRequired:            row?.consentFormRequired ?? false,
+      responseOptionText:             row?.responseOptionText || row?.applicantGuidanceText || "",
+      // Schema: siteType is singular EntityType {id, type} — preserve as-is
+      siteType:                       row?.siteType || null,
     };
 
     if (!hasSubCat) return [mainRow];
@@ -174,9 +179,12 @@ const ProfessionalConductDisclosure = () => {
   const getLastModifiedDate = async (id) => {
     try {
       const { data } = await GET(`entity-service/referenceList/entity/${id}`);
+      // referenceList response keys from Image 3 network tab
       const ts =
+        data?.departments?.lastModified ||           // fallback — always present
         data?.disclosures?.lastModified ||
-        data?.professionalConductDisclosure?.lastModified;
+        data?.professionalConductDisclosure?.lastModified ||
+        data?.functionalTitles?.lastModified;
       if (!ts) return;
       const date = new Date(ts);
       if (!isNaN(date))
@@ -545,23 +553,7 @@ const ProfessionalConductDisclosure = () => {
                 )}
               </div>
 
-              {/* MARK AS DONE */}
-              <div style={{
-                display: "flex", justifyContent: "flex-end",
-                padding: "16px 0 4px", borderTop: "1px solid #e0e0e0", marginTop: "auto",
-              }}>
-                <button
-                  onClick={handleMarkAsDone}
-                  style={{
-                    background: "var(--primary-color)", color: "#fff",
-                    border: "none", borderRadius: 6, padding: "11px 32px",
-                    fontWeight: 700, fontSize: 13, cursor: "pointer",
-                    textTransform: "uppercase", letterSpacing: "0.5px",
-                  }}
-                >
-                  MARK AS DONE
-                </button>
-              </div>
+
             </div>
 
           </div>
