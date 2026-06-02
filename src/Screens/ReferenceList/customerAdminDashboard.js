@@ -313,15 +313,13 @@ const ClientAdminDashboard = () => {
                         )}
                       </div>
                     </Link>
-                    <Link
+                    {/*<Link
                       to="/referenceList/contractServiceProviderBySiteType"
                       className={style.linkStyle}
                     >
                       {" "}
                       <div className={style.dashboardCardStyle}>
-                        {/* <h5 className={`${style.headingForReferenceList}`}>
-                          HEALTHCARE PRACTIONER TYPE BY ENTITY / SITE
-                        </h5> */}
+                        
                         <h5 className={`${style.headingForReferenceList}`}>
                           BOARD CERTIFICATION SPECIALITIES BY INDUSTRIES
                         </h5>
@@ -392,8 +390,8 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
                       </div>
-                    </Link>
-                    <Link
+                    </Link>*/}
+                    {/*<Link
                       to="/referenceList/ProofOfDocumentByApplicantType"
                       className={style.linkStyle}
                     >
@@ -401,9 +399,7 @@ const ClientAdminDashboard = () => {
                         <h5 className={`${style.headingForReferenceList}`}>
                           PROOF OF DOCUMENTATION BY APPLICANT TYPES
                         </h5>
-                        {/* <h5 className={`${style.headingForReferenceList}`}>
-                          APPLICANT CREDENTIALING DOC
-                        </h5> */}
+                        
                         {lastUpdatedDate?.terminationReason?.standardList ===
                           true &&
                         lastUpdatedDate?.terminationReason?.lastModified !==
@@ -471,7 +467,7 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
                       </div>
-                    </Link>
+                    </Link> */}
                     <Link
                       to="/referenceList/staffPrivilegesByDepartment"
                       className={style.linkStyle}
@@ -771,7 +767,7 @@ const ClientAdminDashboard = () => {
                         )}
                       </div>
                     </Link>
-                    <Link
+                    {/*<Link
                       to="/referenceList/contractTerminationReasonForCustomer"
                       className={style.linkStyle}
                     >
@@ -843,7 +839,7 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
                       </div>
-                    </Link>
+                    </Link>*/}
 
                     {/* <Link
                       to={"/referenceList/absenceReasonsForCustomer"}
@@ -1150,14 +1146,12 @@ const ClientAdminDashboard = () => {
                 </div>
                 <div className={style.margin20}>
                   <div className={style.grid4}>
-                    <Link
+                    {/*<Link
                       to={"/referenceList/functionalTitleForCustomer"}
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>
-                        {/* <h5 className={`${style.headingForReferenceList}`}>
-                          FUNCTIONAL TITLES FOR PROVIDERS
-                        </h5> */}
+                        
                         <h5 className={`${style.headingForReferenceList}`}>
                           CREDENTIALING & PRIVILEGING CATEGORY BY APPLICANT TYPE
                         </h5>
@@ -1234,9 +1228,7 @@ const ClientAdminDashboard = () => {
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>
-                        {/* <h5 className={`${style.headingForReferenceList}`}>
-                          APPLICATIONS WORKFLOW
-                        </h5> */}
+                        
                         <h5 className={`${style.headingForReferenceList}`}>
                           BILLING SPECIALITY CODE BY ENTITY TYPE
                         </h5>
@@ -1313,9 +1305,7 @@ const ClientAdminDashboard = () => {
                       className={style.linkStyle}
                     >
                       <div className={style.dashboardCardStyle}>
-                        {/* <h5 className={`${style.headingForReferenceList}`}>
-                          CONSENT AND ACKNOWLEDGEMENT FORMS
-                        </h5> */}
+                        
                         <h5 className={`${style.headingForReferenceList}`}>
                           LICENCE / CERTIFICATION INSTITUTION BY COUNTRY
                           INDUSTRY{" "}
@@ -1768,7 +1758,7 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
                       </div>
-                    </Link>
+                    </Link>*/}
                     {/* <Link
                       to="/referenceList/contractTerminationReasonForCustomer"
                       className={style.linkStyle}
@@ -1921,7 +1911,7 @@ const ClientAdminDashboard = () => {
                         )}
                       </div>
                     </Link>
-                    <Link
+                    {/*<Link
                       to={"/referenceList/functionalTitleForCustomer"}
                       className={style.linkStyle}
                     >
@@ -2378,7 +2368,7 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
                       </div>
-                    </Link>
+                    </Link>*/}
                     <Link
                       to="/referenceList/privilegeListManager"
                       className={style.linkStyle}
@@ -2531,7 +2521,7 @@ const ClientAdminDashboard = () => {
                         )}
                       </div>
                     </Link>
-                    <Link
+                    {/*<Link
                       to="/referenceList/settingList"
                       className={style.linkStyle}
                     >
@@ -2606,7 +2596,7 @@ const ClientAdminDashboard = () => {
                           <></>
                         )}
                       </div>
-                    </Link>
+                    </Link>*/}
                     {/* <Link
                       to="/referenceList/contractTerminationReasonForCustomer"
                       className={style.linkStyle}
